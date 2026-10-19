@@ -1,8 +1,8 @@
 import {readFile,writeFile,mkdir,unlink} from 'node:fs/promises';
-import {render} from '../.build/entry-server.js';
+import {render,renderHome} from '../.build/entry-server.js';
 let home=await readFile('dist/index.html','utf8');
 
-await writeFile('dist/index.html',home.replace('</head>','<link rel="stylesheet" href="/assets/theme.css"></head>'));
+await writeFile('dist/index.html',home.replace('<!--home-html-->',renderHome()).replace('</head>','<link rel="stylesheet" href="/assets/theme.css"></head>'));
 const template=(await readFile('dist/case.html','utf8')).replace('</head>','<link rel="stylesheet" href="/assets/theme.css"></head>');
 for(const route of ['/work/b2c','/work/opsgate','/work/operations','/work/visualization','/work/website-cms','/work/recon-desk','/work/sales-crm','/lite','/404']){
  const dir=`dist${route}`;await mkdir(dir,{recursive:true});

@@ -1,7 +1,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
-import re
+import re, json, html
 root=Path('dist')
 class Page(HTMLParser):
  def __init__(self,text):
@@ -20,7 +20,7 @@ for file in files:
  assert page.h1==1,f'{file}: H1 count {page.h1}'
  assert len(page.ids)==len(set(page.ids)),f'{file}: duplicate ids'
  assert 'Ankit' in text and 'chandolaankit027@gmail.com' in text
- assert '<!--app-html-->' not in text
+ assert '<!--app-html-->' not in text and '<!--home-html-->' not in text
  for ref in page.refs:
   url=urlsplit(ref)
   if url.scheme:continue
@@ -32,6 +32,8 @@ for file in files:
    if url.fragment:assert url.fragment in Page(target.read_text()).ids,f'{file}: missing cross-route anchor {ref}'
  if 'lite/' in str(file):assert page.scripts==0,'Lite must not load client JS'
  assert 'type="text/javascript" src="http' not in text
+home=html.unescape((root/'index.html').read_text())
+for project in json.load(open('src/content/projects.json')):assert project['name'] in home,f"Homepage missing project {project['name']}"
 for cssfile in (root/'assets').glob('*.css'):
  for asset in re.findall(r'url\([\'"]?([^\)\'\"]+)',cssfile.read_text()):
   if asset.startswith('data:'):continue

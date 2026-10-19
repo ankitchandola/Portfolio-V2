@@ -37,7 +37,46 @@
         "Candidate bank and books transactions with explicit confirm and reject actions."
       ]
     ],
-    "url": "https://ankitchandola.github.io/csvDiffTool/"
+    "url": "https://ankitchandola.github.io/csvDiffTool/",
+    "home": {
+      "anchor": "playground",
+      "label": "Independent project \u00b7 browser tool",
+      "tagline": "Compare exports. Review matches. Keep control of the result.",
+      "highlights": [
+        [
+          "Keep identity intact.",
+          "Leading-zero keys stay intact. Duplicate keys are surfaced as problems."
+        ],
+        [
+          "Set it once. Reuse it.",
+          "Saved profiles keep comparison rules ready for the next export."
+        ],
+        [
+          "Take the answers with you.",
+          "CSV, JSON and text-cell XLSX results, with values preserved."
+        ]
+      ],
+      "notes": [
+        [
+          "Why this exists",
+          "Recurring exports make meaningful changes hard to spot. Row order and formatting can add noise. I built the comparison and reconciliation tool around reusable rules."
+        ],
+        [
+          "The engineering choice",
+          "Match by identity, use exact decimal operations, and keep file processing in workers. Duplicate keys are reported as ambiguous instead of guessed."
+        ],
+        [
+          "Where the demo stops",
+          "This local example compares three sample records and one amount field. The full tool supports CSV/XLSX input, saved profiles, reconciliation and export. Legacy .xls is excluded."
+        ]
+      ]
+    },
+    "decision": {
+      "label": "Recon Desk",
+      "title": "Ambiguous keys stay visible.",
+      "implementation": "Duplicate keys are reported rather than matched arbitrarily. Composite keys use ordered parts, and identifiers retain leading zeros.",
+      "boundary": "The comparison excludes ambiguous keys from matching on both sides."
+    }
   },
   {
     "slug": "operations",
@@ -86,7 +125,13 @@
         "Saved on device",
         "A pending-sync badge and local-save message distinguish queued work from server confirmation."
       ]
-    ]
+    ],
+    "decision": {
+      "label": "Offline field work",
+      "title": "Saved locally is not synced.",
+      "implementation": "Prepared reads and pending edits live in IndexedDB. Saves are sequenced per unit, with at most three concurrent sync operations.",
+      "boundary": "The server remains authoritative. Local saving, server confirmation and survey completion are separate states."
+    }
   },
   {
     "slug": "visualization",
@@ -130,7 +175,13 @@
         "Unit timeline",
         "Survey and production history for the selected unit."
       ]
-    ]
+    ],
+    "decision": {
+      "label": "Shared React package",
+      "title": "Reusable UI, explicit ownership.",
+      "implementation": "Typed props, callbacks and adapters connect the same visualization components to two applications.",
+      "boundary": "Each host owns its authentication, API access, persistence and business validation."
+    }
   },
   {
     "slug": "website-cms",
@@ -184,7 +235,8 @@
         "CMS collection",
         "The configured blog collection in Strapi\u2019s content manager, using sample entries."
       ]
-    ]
+    ],
+    "galleryLabel": "Website and CMS screenshot views"
   },
   {
     "slug": "sales-crm",
@@ -240,6 +292,7 @@
         "Engineering boundaries",
         "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
       ]
-    ]
+    ],
+    "galleryLabel": "CRM screenshot views"
   }
 ]

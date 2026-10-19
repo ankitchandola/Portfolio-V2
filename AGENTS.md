@@ -7,7 +7,7 @@ Read `docs/DESIGN.md` before changing UI, theme, layout, motion or portfolio cop
 - Keep lite script-free, its section numbering consistent and current employment visible.
 - Treat supplied notes and direct ownership clarifications as the source for claims. Do not invent outcomes, project details, metrics or case-study narratives.
 - Keep internal identities private and use approved sanitised screenshots. Do not commit credentials, private source notes or business data.
-- Keep main markup in `index.html` consistent with `src/content/projects.json` and shared components where content overlaps.
+- Homepage sections live in `src/home/` and read project content from `src/content/projects.json`. Put project copy in the data file, not in components. Keep the element ids and data attributes that `src/original.js` and `src/home.jsx` depend on.
 - Inspect the full CSS cascade before editing; `public/assets/theme.css` is the final shared layer. Avoid accumulating contradictory overrides.
 - Preserve the separate original interactive Site. This repository is the updated edition.
 - For UI changes, run `npm run build` and `python tests/check-site.py`; run `npm test` for comparison-model changes. Perform rendered checks when available and report unavailable checks honestly.
