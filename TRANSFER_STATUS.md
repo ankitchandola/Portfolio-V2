@@ -12,20 +12,9 @@ Source: updated interactive portfolio, source commit ec35c95. The original inter
 - [x] Batch 4: Operations and Recon Desk screenshots (9 source files)
 - [x] Source verification: all 50 transferred source files match ec35c95 byte-for-byte. TRANSFER_STATUS.md is the only additional file.
 
-## Owner-managed files
+- [x] Batch 5: Sales CRM and Website & CMS screenshots (8 files), added from the owner's sanitised captures on 2026-10-19 and scaled to 2048×1280 to match the existing screenshots. Every image referenced by the site is now present.
 
-The owner explicitly chose to upload the remaining screenshots themselves on 2026-10-19. Do not retry screenshot uploads or restart completed batches.
-
-Upload these files under public/assets/projects/ using their existing filenames:
-
-- crm-lead-detail.png
-- crm-leads-kanban.png
-- crm-leads-list.png
-- strapi-blog-list.png
-- strapi-entry-editor.png
-- web-blog-list.png
-- web-blog-post.png
-- web-home.png
+## Remaining
 
 The remaining source file is public/assets/docs/ankit-chandola-resume.pdf. It was excluded by automatic approval review; the existing résumé links expect that exact path. It has not been published to this repository.
 
