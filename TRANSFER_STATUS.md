@@ -5,7 +5,7 @@ Destination: https://github.com/ankitchandola/Portfolio-V2
 Source: existing updated interactive portfolio, local source commit ec35c95. The original interactive Site remains separate.
 
 - [x] Batch 1: Project setup, design guide and checks (12 source files)
-- [ ] Batch 2: Portfolio pages, content and styles (23 source files)
+- [x] Batch 2: Portfolio pages, content and styles (23 source files)
 - [ ] Batch 3: Local fonts and resume (7 source files)
 - [ ] Batch 4: Operations and Recon Desk screenshots (9 source files)
 - [ ] Batch 5: CRM and CMS screenshots (8 source files)

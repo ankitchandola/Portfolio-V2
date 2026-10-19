@@ -1,0 +1,245 @@
+[
+  {
+    "slug": "recon-desk",
+    "name": "Recon Desk",
+    "kind": "Personal project",
+    "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Web Workers",
+      "IndexedDB"
+    ],
+    "ownership": "I built the application end to end.",
+    "sections": [
+      [
+        "Comparison",
+        "Key-based comparison supports composite identities, duplicate-key reporting, exact decimal tolerances and reusable profiles. Results export as CSV, JSON or a workbook of text cells."
+      ],
+      [
+        "Reconciliation",
+        "Candidate matches use amounts, dates and references. Users confirm or reject suggestions, handle unmatched items and review balances before explicitly completing a reconciliation."
+      ],
+      [
+        "Processing and sessions",
+        "Workers hold the full datasets while the interface requests bounded result pages. Reconciliation decisions can be saved in IndexedDB or exported as a session backup. Source files are reread when restoring a session."
+      ]
+    ],
+    "images": [
+      [
+        "recon-desk-comparison-results",
+        "Comparison results",
+        "Changed values, record counts and export options."
+      ],
+      [
+        "recon-desk-reconcile-suggestions",
+        "Review suggestions",
+        "Candidate bank and books transactions with explicit confirm and reject actions."
+      ]
+    ],
+    "url": "https://ankitchandola.github.io/csvDiffTool/"
+  },
+  {
+    "slug": "operations",
+    "name": "Internal Operations Platform",
+    "kind": "Professional work",
+    "summary": "One platform connecting orders, site surveys, production, dispatch and installation. My work spans the frontend and selected backend services, including the complete offline implementation.",
+    "tags": [
+      "React / TypeScript",
+      "TanStack Query",
+      "Fastify",
+      "PostgreSQL"
+    ],
+    "ownership": "I owned most frontend development and implemented the offline functionality across both frontend and backend, within an existing team codebase.",
+    "sections": [
+      [
+        "Field workflows",
+        "Built survey grids, unit measurement panels, photo and deviation handling, order and work-order selection, scanning flows and mobile operator screens."
+      ],
+      [
+        "Prepared offline work",
+        "Prepared grids and unit details are stored locally. An IndexedDB-backed queue retains edits and photos, sequences saves per unit and reconciles with the server after reconnecting. Saving on the device is distinct from server confirmation and survey completion."
+      ],
+      [
+        "Backend contributions",
+        "Work included bulk offline reads and saves, activity and comments APIs, session authentication changes, query optimisations and concurrency fixes. The backend uses Fastify, TypeBox, Drizzle and PostgreSQL."
+      ]
+    ],
+    "images": [
+      [
+        "order-overview",
+        "Order overview",
+        "Order-level progress and component summaries, using dummy records."
+      ],
+      [
+        "order-workspace",
+        "Order workspace",
+        "Survey, sales-order and handover tasks within the same order."
+      ],
+      [
+        "survey-unit-detail",
+        "Survey measurements",
+        "A selected unit opens measurement, remarks, photo and deviation controls."
+      ],
+      [
+        "offline-waiting-to-sync",
+        "Saved on device",
+        "A pending-sync badge and local-save message distinguish queued work from server confirmation."
+      ]
+    ]
+  },
+  {
+    "slug": "visualization",
+    "name": "Project Visualization Library",
+    "kind": "Professional work \u00b7 shared package",
+    "summary": "A reusable React package for navigating project hierarchies, reading unit progress and working with selected units. Used by the operations platform and a customer dashboard.",
+    "tags": [
+      "React / TypeScript",
+      "TanStack Virtual",
+      "CSS Modules",
+      "ESM / CJS"
+    ],
+    "ownership": "I created and primarily maintain the shared package and implemented its use across the two applications.",
+    "sections": [
+      [
+        "Shared interface",
+        "The package provides hierarchical navigation, floor grids, status badges and filters, progress summaries, unit details, timelines, selectors and survey forms."
+      ],
+      [
+        "Application boundaries",
+        "Hosts supply data and callbacks and own authentication, APIs, persistence and business validation. The operations application owns offline storage and sync; the package supplies the reusable interface."
+      ],
+      [
+        "Rendering and distribution",
+        "The grid supports recursive hierarchy paths and virtualisation within expanded floors. The package builds ESM and CommonJS outputs with TypeScript declarations and supports React 18 and 19."
+      ]
+    ],
+    "images": [
+      [
+        "customer-progress-grid",
+        "Customer progress",
+        "Project totals and units grouped by floor, flat and room."
+      ],
+      [
+        "customer-unit-detail",
+        "Unit details",
+        "Component statuses, specifications and the selected unit\u2019s location."
+      ],
+      [
+        "customer-unit-timeline",
+        "Unit timeline",
+        "Survey and production history for the selected unit."
+      ]
+    ]
+  },
+  {
+    "slug": "website-cms",
+    "name": "Public Brand Website & CMS",
+    "kind": "Professional work",
+    "summary": "A public-facing SSR website, structured enquiry flows and a Strapi publishing platform, with staging deployment on AWS EC2.",
+    "tags": [
+      "React Router SSR",
+      "Strapi",
+      "Frappe CRM",
+      "AWS EC2"
+    ],
+    "ownership": "I implemented the website and CMS together and set up their shared staging environment.",
+    "sections": [
+      [
+        "Website and enquiries",
+        "Built multi-step homeowner and contractor enquiry forms, pincode lookup, Zod validation and server-side lead delivery. Migrated the CRM integration from Freshworks to Frappe while retaining form workflows and attribution data. The CRM determines duplicate-record outcomes."
+      ],
+      [
+        "Content publishing",
+        "Configured and extended Strapi with article, author, category, site and SEO models, reusable content blocks and S3 media. The SSR website renders published content with search, filtering and pagination. Strapi provides the administration interface and core publishing functionality."
+      ],
+      [
+        "Staging operations",
+        "Set up separate website and CMS processes on one EC2 instance using PM2, Nginx hostname routing and HTTPS. Configured localhost-only PostgreSQL, IAM-based S3 access and daily compressed database backups with seven-day local retention."
+      ]
+    ],
+    "images": [
+      [
+        "web-home",
+        "Homepage",
+        "Public website homepage with product introduction and consultation links."
+      ],
+      [
+        "web-blog-list",
+        "Blog listing",
+        "Featured articles, categories, author information and article search."
+      ],
+      [
+        "strapi-entry-editor",
+        "CMS editor",
+        "Strapi\u2019s entry editor showing the configured article fields, featured image and rich-text content block."
+      ],
+      [
+        "web-blog-post",
+        "Published article",
+        "The corresponding sample article rendered on the public website."
+      ],
+      [
+        "strapi-blog-list",
+        "CMS collection",
+        "The configured blog collection in Strapi\u2019s content manager, using sample entries."
+      ]
+    ]
+  },
+  {
+    "slug": "sales-crm",
+    "name": "Sales CRM & Browser Telephony",
+    "kind": "Professional work",
+    "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
+    "tags": [
+      "Vue 3",
+      "Python / Frappe",
+      "MariaDB / Redis",
+      "Exotel"
+    ],
+    "ownership": "I owned the majority of company-specific frontend and Python backend development. The original Frappe CRM platform and initial installation predated my involvement.",
+    "images": [
+      [
+        "crm-lead-detail",
+        "Lead detail",
+        "Sample lead with separate business stage and engagement fields, plus inbound and outbound call activity."
+      ],
+      [
+        "crm-leads-kanban",
+        "Stage board",
+        "Sample leads grouped by configured business stage in the Frappe CRM Kanban view."
+      ],
+      [
+        "crm-leads-list",
+        "Leads list",
+        "Sample lead records and stage, source and owner filters in the Frappe CRM list view."
+      ]
+    ],
+    "sections": [
+      [
+        "Sales workflows and access",
+        "Implemented separate business-stage and engagement-state rules, required-field validation, call dispositions and hierarchy-aware permissions. Visibility and write access are enforced through backend checks as well as the interface."
+      ],
+      [
+        "Browser telephony",
+        "Built the Exotel browser calling interface and backend integration, including inbound and outbound calls, wrap-up notes, dispositions and recording playback. Call correlation, early-event buffering, tab ownership and scheduled reconciliation handle provider and browser lifecycle issues. Provider outcomes determine whether the customer answered; the browser connecting alone is not sufficient."
+      ],
+      [
+        "Quotation review and revision",
+        "Implemented quotation requests, uploads, review, revision and acceptance. Revisions supersede the earlier request and create a linked successor, preserving prior files and feedback. Accepted commercial values synchronise back to the lead, with permissions restricting who can submit and review."
+      ],
+      [
+        "Website intake and attribution",
+        "Built the Python lead-intake API used by the public website, including phone normalisation, matching, eligible reactivation and campaign attribution. Existing closed records are not silently reopened."
+      ],
+      [
+        "Operations handoff",
+        "Implemented an explicit project-creation action with permission and data checks, expiring signed quote-file links and retryable recovery. Completion requires both external project and draft-order identifiers. The inspected CRM and operations revisions use different API contracts, so these notes do not establish live end-to-end compatibility."
+      ],
+      [
+        "Engineering boundaries",
+        "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
+      ]
+    ]
+  }
+]
