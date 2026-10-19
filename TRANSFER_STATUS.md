@@ -7,7 +7,7 @@ Source: existing updated interactive portfolio, local source commit ec35c95. The
 - [x] Batch 1: Project setup, design guide and checks (12 source files)
 - [x] Batch 2: Portfolio pages, content and styles (23 source files)
 - [x] Batch 3: Local fonts (6 source files)
-- [ ] Batch 4: Operations and Recon Desk screenshots (9 source files)
+- [x] Batch 4: Operations and Recon Desk screenshots (9 source files)
 - [ ] Batch 5: CRM and CMS screenshots (8 source files)
 
 Transfer in progress. Resume from the first unchecked batch; preserve existing commits.
