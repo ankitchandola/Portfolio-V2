@@ -2,27 +2,35 @@
 
 Destination: https://github.com/ankitchandola/Portfolio-V2
 
-Source: existing updated interactive portfolio, local source commit ec35c95. The original interactive Site remains separate.
+Source: updated interactive portfolio, source commit ec35c95. The original interactive Site remains separate.
+
+## Completed
 
 - [x] Batch 1: Project setup, design guide and checks (12 source files)
 - [x] Batch 2: Portfolio pages, content and styles (23 source files)
 - [x] Batch 3: Local fonts (6 source files)
 - [x] Batch 4: Operations and Recon Desk screenshots (9 source files)
-- [ ] Batch 5: CRM and CMS screenshots (8 source files)
+- [x] Source verification: all 50 transferred source files match ec35c95 byte-for-byte. TRANSFER_STATUS.md is the only additional file.
 
-Transfer paused by automatic approval review. Batches 1–4 remain committed on main. Publishing batch 5 screenshots and the résumé requires explicit user approval for this public repository.
+## Owner-managed files
 
-Verification: all 50 existing source files on main match source commit ec35c95 byte-for-byte; TRANSFER_STATUS.md is the only extra file. All 8 batch-5 screenshots remain uncommitted.
+The owner explicitly chose to upload the remaining screenshots themselves on 2026-10-19. Do not retry screenshot uploads or restart completed batches.
 
-Recovery checkpoint: CRM blobs already uploaded (not committed):
-- public/assets/projects/crm-lead-detail.png: d4d9a028856c8ca108010a996b09845bfb0f12d9
-- public/assets/projects/crm-leads-kanban.png: 0a361e64eca7a7e3203687670a3bb566eb329f86
-- public/assets/projects/crm-leads-list.png: 487811620166fbf3bd654b389c2228a96c520a5e
+Upload these files under public/assets/projects/ using their existing filenames:
 
-Do not restart batches 1–4. After explicit approval, finish batch 5, verify source hashes and update this checklist.
+- crm-lead-detail.png
+- crm-leads-kanban.png
+- crm-leads-list.png
+- strapi-blog-list.png
+- strapi-entry-editor.png
+- web-blog-list.png
+- web-blog-post.png
+- web-home.png
 
-Validation of the complete source on 2026-10-19: production build passed; 7 tests passed; site checks passed for 10 prerendered pages and 19 text contrast pairs. Browser visual checks were not performed during transfer.
+The remaining source file is public/assets/docs/ankit-chandola-resume.pdf. It was excluded by automatic approval review; the existing résumé links expect that exact path. It has not been published to this repository.
 
-Blocked file: public/assets/docs/ankit-chandola-resume.pdf. Automatic approval review requires explicit approval before publishing its personal information to this public repository.
+## Validation and scope
+
+Validation of the complete original source on 2026-10-19: production build passed; 7 tests passed; site checks passed for 10 prerendered pages and 19 text contrast pairs. These checks used the complete source, including assets; they do not establish that the repository passes its asset checks before the missing files are added. Browser visual checks were not performed during transfer.
 
 No deployment was performed as part of this GitHub transfer. Generated dist output, node_modules and local runtime files are excluded.
