@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/scope-styles.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir .build && node scripts/prerender.mjs",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .build && node scripts/prerender.mjs",
     "dev": "vite --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs"
   },

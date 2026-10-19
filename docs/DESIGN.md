@@ -120,7 +120,7 @@ Keep internal project names and private infrastructure identifiers anonymous. Us
 - `src/content/profile.js`: contact links, résumé path and the current-scope list shared by the homepage and lite.
 - `src/App.jsx`: lite, project detail and 404 layouts.
 - `src/home.jsx`, `src/original.js`: homepage galleries and interactions, attached to the static markup by element ids and data attributes.
-- `public/assets/style.css`, `lab.css`, `v2.css`: main styles; some legacy rules remain.
+- `public/assets/style.css`, `v2.css`: main styles; some legacy rules remain.
 - `src/style.css`, `src/case-theme.css`: detail and lite styles.
 - `public/assets/theme.css`: final shared theme overrides and recent component corrections.
 - `scripts/prerender.mjs`: homepage rendering, route generation and script-free lite output.
