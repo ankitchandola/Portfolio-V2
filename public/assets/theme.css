@@ -161,3 +161,8 @@ footer a:focus-visible{outline-color:#245e58}
 .big-result-icon .icon{display:none;width:28px;height:28px}.big-result-icon[data-icon=changed] .icon-arrow-up-right,.big-result-icon[data-icon=problem] .icon-circle-alert,.big-result-icon[data-icon=clear] .icon-check{display:inline-block}
 .section-intro{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:0 64px;align-items:end}.section-intro .eyebrow{grid-column:1/-1}.section-intro h2{grid-column:1}.section-intro .section-description{grid-column:2;margin:0;padding-bottom:8px;max-width:44ch;font-size:19px;line-height:1.55}
 @media(max-width:1000px){.section-intro{display:block}.section-intro .section-description{margin-top:18px;padding:0;max-width:60ch;font-size:18px}}
+:is(.gallery-options button,.theme-toggle,.reset){transition:transform 140ms cubic-bezier(.23,1,.32,1)}:is(.scenario,.gallery-options button,.theme-toggle,.reset):active{transform:scale(.97)}
+.evidence-gallery figure:not([hidden]){animation:gallery-in 180ms cubic-bezier(.23,1,.32,1)}@keyframes gallery-in{from{opacity:0}}
+/* Set by client.js only on sections that start below the fold, so content stays visible without JavaScript. */
+.reveal>*{opacity:0;transform:translateY(16px);transition:opacity 520ms cubic-bezier(.23,1,.32,1) var(--reveal-delay,0ms),transform 520ms cubic-bezier(.23,1,.32,1) var(--reveal-delay,0ms)}.reveal.revealed>*{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.evidence-gallery figure:not([hidden]){animation:none}:is(.scenario,.gallery-options button,.theme-toggle,.reset):active{transform:none}}

@@ -104,7 +104,7 @@ Reuse existing teal primary actions, outlined secondary actions, restrained offs
 
 The main hero cycles through `<ankit chandola>`, `</>`, `<full stack developer>`, `<problem solver>` and `<tool builder>`. Keep a stable accessible identity alongside decorative animation. The skills banner runs continuously with relevant technologies.
 
-Respect reduced-motion preferences and the existing pause control. Essential content must not depend on animation. Use short, restrained transitions for actions and expansion. 3D is optional only when it explains the work; do not add it as ambient decoration or a prerequisite to reading.
+Respect reduced-motion preferences and the existing pause control. Sections that start below the fold enter once with a short 70ms stagger, and only when motion is allowed and not paused. Content is visible without JavaScript. Pressable controls give press feedback; hover transforms apply only on devices that can hover. Gallery views crossfade in 180ms. Essential content must not depend on animation. Use short, restrained transitions for actions and expansion. 3D is optional only when it explains the work; do not add it as ambient decoration or a prerequisite to reading.
 
 Interactive demonstrations must be visibly inviting before the first click: explain what to try, show controls, indicate the result and make reset clear. Label simplified sample data. The portfolio's CSV demo has deliberately limited scope; it is not the full Recon Desk engine.
 
