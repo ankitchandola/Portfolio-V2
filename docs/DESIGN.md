@@ -98,7 +98,7 @@ Existing desktop alignment uses an 86px left inset (60px number plus 26px gap), 
 
 ### Actions and icons
 
-Reuse existing teal primary actions, outlined secondary actions, restrained offset shadows and small corner radii. Keep the contact CTA in the same visual family. Use Lucide consistently; prefer icons around 24px and comfortable controls of at least 44px. Icon-only buttons need accessible labels. Footer social links include recognisable GitHub and LinkedIn icons alongside names.
+Reuse existing teal primary actions, outlined secondary actions, restrained offset shadows and small corner radii. Keep the contact CTA in the same visual family. Use Lucide consistently; prefer icons around 24px and comfortable controls of at least 44px. Icon-only buttons need accessible labels. Draw icons from the Lucide set in `src/home/icons.jsx`; do not use unicode glyphs (▤ ✓ ✳ ↺ ⇅) as icons. Footer social links include recognisable GitHub and LinkedIn icons alongside names.
 
 ## Motion and interaction
 

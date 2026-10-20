@@ -36,7 +36,7 @@ function render() {
   if (result.error) {
     $('result-title').textContent = 'Let’s check that amount';
     $('result-description').textContent = 'The tables still show your last valid comparison. Enter a valid amount to update them.';
-    $('result-icon').textContent = '!';
+    $('result-icon').dataset.icon = 'problem';
     $('result-badge').textContent = 'Needs input';
     $('demo-result').className = 'demo-result problem';
     $('demo-tip').textContent = 'For example, try 920 or 850.01. Negative values and more than two decimal places are outside this demo.';
@@ -45,7 +45,7 @@ function render() {
   $('after-rows').replaceChildren(tableRows(result.after, result));
   const problem = result.problems.length > 0, changed = result.changed.length > 0;
   $('demo-result').className = 'demo-result ' + (problem ? 'problem' : changed ? '' : 'success');
-  $('result-icon').textContent = problem ? '!' : changed ? '↗' : '✓';
+  $('result-icon').dataset.icon = problem ? 'problem' : changed ? 'changed' : 'clear';
   $('result-badge').textContent = result.unchanged.length + ' unchanged';
   if (problem) {
     $('result-title').textContent = '1 ambiguous key. No guessing.';
@@ -105,7 +105,7 @@ function applyMotion() {
   const stopped = paused || reduced.matches;
   document.body.classList.toggle('motion-paused', stopped);
   motionButton.setAttribute('aria-pressed', String(stopped));
-  motionButton.textContent = reduced.matches ? 'Motion reduced' : paused ? '▷ Play motion' : 'Ⅱ Pause motion';
+  $('motion-label').textContent = reduced.matches ? 'Motion reduced' : paused ? 'Play motion' : 'Pause motion';
   motionButton.disabled = reduced.matches;
   morph.textContent = phrases[0]; index = 0;
   loop();
