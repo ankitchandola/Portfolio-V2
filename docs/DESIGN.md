@@ -44,7 +44,7 @@ Keep the font licence in `public/assets/fonts/LICENSE.txt`. Use the final `--dis
 
 Section labels such as `01 / SELECTED WORK` should be distinctive condensed sans, not monospace. Paragraphs should read naturally beside headings. Do not use monospace as the default card description or tag font.
 
-For new content, target 18px body text with approximately 1.5–1.65 line height, 17–19px card descriptions and 14–16px tags. Small screens may reduce body text to 17px. These are design targets, not a claim that every legacy selector has been normalised. Do not shrink text to solve a layout problem. No readable text goes below 13px at any width; the final readable-minimum block in `theme.css` enforces this for legacy labels. Keep long reading passages around 60–75 characters per line.
+For new content, target 18px body text with approximately 1.5–1.65 line height, 17–19px card descriptions and 14–16px tags. Small screens may reduce body text to 17px. These are design targets, not a claim that every legacy selector has been normalised. Do not shrink text to solve a layout problem. No readable text goes below 13px at any width; the final readable-minimum block in `theme.css` enforces this for legacy labels. Section intros put the label on its own row, the headline on the left and the description in the right column on wide screens, stacking below 1000px. Keep long reading passages around 60–75 characters per line.
 
 ## Layout and hierarchy
 

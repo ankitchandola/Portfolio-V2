@@ -12,6 +12,6 @@ function Flagship({project:p,index}){const home=p.home;return <article className
 </article>}
 function IntegratedProject({project:p,index}){return <article className={'integrated-project'+(index%2?'':' flip')} id={p.slug}><div className="integrated-heading"><p className="eyebrow">{number(index)} / {p.kind.toUpperCase()}</p><h3>{p.name}</h3><p className="project-summary">{p.summary}</p><p className="ownership-note"><span>My role</span>{p.ownership}</p><div className="tags">{p.tags.map(t=><span key={t}>{t}</span>)}</div><a className="text-link" href={'/work/'+p.slug}>Project details <LinkArrow/></a></div><EvidenceGallery images={p.images} label={p.galleryLabel??p.name+' screenshot views'}/></article>}
 export default function SelectedWork(){return <section className="work-section wrap" id="work">
- <div className="section-intro"><div><p className="eyebrow">01 / SELECTED WORK</p><h2>Less “take my word for it.”<br/><span>More “give it a try.”</span></h2><p className="section-description">Try a useful tool, explore the systems I’ve worked on, and take a closer look at the decisions behind them.</p></div></div>
+ <div className="section-intro"><p className="eyebrow">01 / SELECTED WORK</p><h2>Less “take my word for it.”<br/><span>More “give it a try.”</span></h2><p className="section-description">Try a useful tool, explore the systems I’ve worked on, and take a closer look at the decisions behind them.</p></div>
  {projects.map((p,i)=>p.home?<Flagship key={p.slug} project={p} index={i}/>:<IntegratedProject key={p.slug} project={p} index={i}/>)}
 </section>}
