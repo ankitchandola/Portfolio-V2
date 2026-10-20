@@ -21,6 +21,10 @@
         "Candidate matches use amounts, dates and references. Users confirm or reject suggestions, handle unmatched items and review balances before explicitly completing a reconciliation."
       ],
       [
+        "Monthly accounting",
+        "Remaining items are classified as outstanding payments, deposits in transit, bank entries to record or errors to investigate. Source balances are validated, and unresolved items carry into the next period with their history, so an item that clears next month is not counted again as new movement."
+      ],
+      [
         "Processing and sessions",
         "Workers hold the full datasets while the interface requests bounded result pages. Reconciliation decisions can be saved in IndexedDB or exported as a session backup. Source files are reread when restoring a session."
       ]
@@ -76,7 +80,51 @@
       "title": "Ambiguous keys stay visible.",
       "implementation": "Duplicate keys are reported rather than matched arbitrarily. Composite keys use ordered parts, and identifiers retain leading zeros.",
       "boundary": "The comparison excludes ambiguous keys from matching on both sides."
-    }
+    },
+    "problem": "Recurring exports arrive reordered, reformatted and sometimes with duplicate identifiers, so meaningful changes are hard to see. Bank reconciliation adds different dates, references, sign conventions, grouped payouts and items that clear in a later month. A row-by-row diff or an amount-only match misclassifies these cases.",
+    "challenges": [
+      [
+        "Large files without a frozen interface",
+        "Parsing, comparing and exporting can involve millions of fields, and handing a whole result to React still costs copying and rendering.",
+        "Workers keep the full data and results. The interface requests typed, bounded pages and renders virtualised rows.",
+        "More protocol and lifecycle code. Workers still hold whole files in memory; this is not a streaming engine."
+      ],
+      [
+        "Avoiding misleading matches",
+        "Same-amount transactions compete, and debit and credit labels mean different things in bank and books exports.",
+        "Normalise to explicit money in and out, require exact signed amounts within a declared date window, group competing candidates and leave confirmation to the reviewer.",
+        "More manual review when candidates compete. A candidate budget bounds the search and reports it as incomplete rather than as \u201cno match\u201d."
+      ],
+      [
+        "Recoverable work without a server",
+        "Cancelling a worker, reloading the page or a second open tab could lose or overwrite review decisions.",
+        "Keep ordered decisions outside the workers, replay them against source-file fingerprints, validate versioned backups and check revisions inside one IndexedDB transaction.",
+        "Original files must be supplied again after a reload. Browser saving is not a cloud backup."
+      ]
+    ],
+    "facts": [
+      [
+        "488",
+        "automated tests across 37 files",
+        "Unit test run while preparing the project notes. Not a coverage figure."
+      ],
+      [
+        "7 ms",
+        "reconciliation status refresh at 200,000 rows per side, down from 410 ms",
+        "Historical worker benchmark in Node. Not end-to-end user latency."
+      ],
+      [
+        "2M",
+        "candidate pairs suggested in 0.8\u20131.0 s",
+        "Approximate count, three historical runs in desktop Chrome. Excludes reading files and checking the mapping."
+      ],
+      [
+        "197 MiB",
+        "per file, compared, scrolled and exported in the browser",
+        "Approximate size, one recorded run in Chrome on an M4 with 16 GiB. Not a capacity promise for every device."
+      ]
+    ],
+    "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool."
   },
   {
     "slug": "operations",
@@ -98,6 +146,10 @@
       [
         "Prepared offline work",
         "Prepared grids and unit details are stored locally. An IndexedDB-backed queue retains edits and photos, sequences saves per unit and reconciles with the server after reconnecting. Saving on the device is distinct from server confirmation and survey completion."
+      ],
+      [
+        "Scanning and the installable app",
+        "Production and dispatch screens resolve component QR or serial codes against a scoped manifest and stage valid pieces with counts before submission. The app installs as a PWA with a cached shell, update prompts the user controls and a pending-sync indicator."
       ],
       [
         "Backend contributions",
@@ -131,7 +183,29 @@
       "title": "Saved locally is not synced.",
       "implementation": "Prepared reads and pending edits live in IndexedDB. Saves are sequenced per unit, with at most three concurrent sync operations.",
       "boundary": "The server remains authoritative. Local saving, server confirmation and survey completion are separate states."
-    }
+    },
+    "problem": "Office, factory and site teams work on the same orders at different levels: the order, each unit and each component. Surveyors also work where connectivity is unreliable. The platform keeps order-level coordination consistent with unit and component work, from site survey through installation and handover.",
+    "challenges": [
+      [
+        "Reconnect bursts",
+        "Resuming many queued saves at once overloaded connection queues and risked timeouts.",
+        "A shared limit of three in-flight sync operations, bulk survey saves and debounced order refreshes, with targeted backend fixes for connection contention.",
+        "Bounded concurrency can drain the queue more slowly than unrestricted parallel requests."
+      ],
+      [
+        "Preparing work for offline use",
+        "Preparing grids and each unit\u2019s details produced many separate requests.",
+        "Bulk grid reads and cursor-paginated unit-detail preparation, supported by matching backend changes.",
+        "Bulk payloads still grow with the size of the project hierarchy."
+      ],
+      [
+        "One invalid scan, one failed batch",
+        "A single invalid component could make the backend reject a whole batch of scans.",
+        "Scoped scan manifests and local checks reject unknown, duplicate, already-processed and not-yet-produced components before they enter the batch.",
+        "Locally cached eligibility can become stale, so the backend still revalidates every submission."
+      ]
+    ],
+    "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records."
   },
   {
     "slug": "visualization",
@@ -181,7 +255,41 @@
       "title": "Reusable UI, explicit ownership.",
       "implementation": "Typed props, callbacks and adapters connect the same visualization components to two applications.",
       "boundary": "Each host owns its authentication, API access, persistence and business validation."
-    }
+    },
+    "problem": "Operations staff and customers need the same project and unit information for different jobs: staff select, survey and track units, while customers follow progress. Without a shared package, each application would build and maintain its own project-tracking interface.",
+    "challenges": [
+      [
+        "One interface, two hosts",
+        "The two applications use different routers, React versions and data layers.",
+        "Typed props, callbacks and a host-supplied fetcher. The package contains no router, API client or credentials, and React stays a peer dependency.",
+        "Each host writes adapters and orchestrates its own queries and actions."
+      ],
+      [
+        "Late data must win",
+        "A restored selection could arrive before the host had finished loading which units are disabled.",
+        "Re-prune the selection whenever disabled units change, not only on the first render.",
+        "Selection state has to stay synchronised with inputs that change after mount."
+      ],
+      [
+        "Reliable photo uploads",
+        "A cancelled upload could resolve later and reappear, concurrent completions could drop images, and a form could submit before photo URLs existed.",
+        "Track local upload identities, ignore cancelled results, read current state on each completion and hold submission while uploads run.",
+        "Cancelling hides the result but cannot abort the request, because the host\u2019s upload callback exposes no abort."
+      ]
+    ],
+    "facts": [
+      [
+        "2",
+        "applications use the package",
+        "Verified through dependency declarations and imports in both."
+      ],
+      [
+        "18",
+        "test files",
+        "File count in the inspected revision. Not a test-case or coverage count."
+      ]
+    ],
+    "limits": "No authentication, database, persistence or offline queue. The package presents states supplied by its host, and the backend owns permissions and business rules. It is a data-driven progress view, not a 3D or CAD renderer."
   },
   {
     "slug": "website-cms",
@@ -199,6 +307,10 @@
       [
         "Website and enquiries",
         "Built multi-step homeowner and contractor enquiry forms, pincode lookup, Zod validation and server-side lead delivery. Migrated the CRM integration from Freshworks to Frappe while retaining form workflows and attribution data. The CRM determines duplicate-record outcomes."
+      ],
+      [
+        "Campaign attribution",
+        "First-touch and last-touch campaign parameters persist for 180 and 30 days, and supported ad click IDs travel with each enquiry, so campaign context survives when a visitor lands on one page and submits from another."
       ],
       [
         "Content publishing",
@@ -236,7 +348,29 @@
         "The configured blog collection in Strapi\u2019s content manager, using sample entries."
       ]
     ],
-    "galleryLabel": "Website and CMS screenshot views"
+    "galleryLabel": "Website and CMS screenshot views",
+    "problem": "The brand needed a product-discovery and enquiry channel that delivers structured leads to sales with their campaign context, and a way for editors to publish articles without a code release.",
+    "challenges": [
+      [
+        "Forms that understand CRM outcomes",
+        "A submission can create a lead, match an existing one, reactivate it, reach a closed record or fail.",
+        "One server-side lead request maps each recognised outcome and error, including validation, rate limits and timeouts, to its own form state. Credentials stay on the server.",
+        "The website stays coupled to the CRM\u2019s response contract."
+      ],
+      [
+        "Flexible articles, consistent pages",
+        "Editors need varied article layouts, while the site needs consistent, server-rendered pages.",
+        "Model the article body as reusable CMS blocks, each rendered by a dedicated React component.",
+        "Schema changes need matching renderer and type changes, and sometimes a content migration."
+      ],
+      [
+        "One small staging server",
+        "Run an SSR website and a CMS without mixing their origins or process configuration.",
+        "Separate hostnames and managed processes behind one Nginx, HTTPS on both, a database reachable only on localhost and S3 access through an instance role instead of stored keys.",
+        "Both applications share one instance\u2019s memory, CPU and failure domain. It is not a highly available setup."
+      ]
+    ],
+    "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging."
   },
   {
     "slug": "sales-crm",
@@ -293,6 +427,28 @@
         "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
       ]
     ],
-    "galleryLabel": "CRM screenshot views"
+    "galleryLabel": "CRM screenshot views",
+    "problem": "Sales staff needed one place to receive enquiries, call customers from the browser, obtain and revise quotations and hand confirmed business to operations, with each team seeing and changing only what its role allows.",
+    "challenges": [
+      [
+        "Two call legs, events out of order",
+        "The staff member\u2019s browser can connect even when the customer never answers, and the incoming call signal can arrive before the outbound API response.",
+        "Correlate the provider\u2019s call identifier, buffer early invitations, separate uncertain dial results from failures and treat provider webhooks and scheduled reconciliation as the outcome authority.",
+        "More state-machine logic and provider-specific testing."
+      ],
+      [
+        "One phone per agent",
+        "Several tabs or stale registrations could ring multiple browser instances and interfere with call setup.",
+        "Web Locks keep one active softphone tab, with reconnect policies, generation guards, pinned SDK versions and targeted patches.",
+        "Web Locks do not coordinate separate browsers or machines, and the SDK patches need checking on every upgrade."
+      ],
+      [
+        "Progress is not responsiveness",
+        "One status field cannot show both how far a sale has progressed and whether the customer has gone quiet.",
+        "Separate business stage and engagement state, enforce transitions in Python and connect call dispositions and follow-up retries to the model.",
+        "Two state dimensions must stay consistent across forms, APIs and automation."
+      ]
+    ],
+    "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge."
   }
 ]
