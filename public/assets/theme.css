@@ -1,4 +1,5 @@
 /* Shared finishing layer: navigation, current-work scope and colour modes. */
+/* Some :is() lists below still name selectors for removed markup. They set the specificity those dark-theme rules need to beat earlier light-theme rules, so remove them only together with a specificity fix. */
 .site-header,.header{position:relative;border-bottom:0}
 .site-header:after,.header:after{content:"";position:absolute;bottom:0;left:50%;width:100vw;transform:translateX(-50%);height:1px;background:var(--line);pointer-events:none}
 body{overflow-x:clip}
@@ -35,23 +36,23 @@ html[data-theme="dark"]{color-scheme:dark;--paper:#101e20;--white:#182a2d;--surf
 [data-theme="dark"] :is(.button,.button.dark,.site-header nav .nav-contact,.header-contact,.solid-button){background:var(--teal,var(--accent));border-color:var(--teal,var(--accent));color:#102b27;box-shadow:4px 4px 0 #365d51}
 [data-theme="dark"] :is(.button.outline,.theme-toggle){background:transparent;color:var(--ink);border-color:var(--line)}
 [data-theme="dark"] :is(.button:hover,.site-header nav .nav-contact:hover,.solid-button:hover){background:#b5e8d8;color:#102b27}
-[data-theme="dark"] :is(.hero-art){background:#203d37;border-color:#4c6761}
-[data-theme="dark"] :is(.sheet-back){background:#493a2f;border-color:#9d7d61}
-[data-theme="dark"] :is(.sheet,.data-file){background:#1b3032;border-color:#527269}
+[data-theme="dark"] :is(.hero-art,.case-page>.project-art){background:#203d37;border-color:#4c6761}
+[data-theme="dark"] :is(.sheet-back,.v2-lab .order-card.late){background:#493a2f;border-color:#9d7d61}
+[data-theme="dark"] :is(.sheet,.data-file,.v2-lab .order-card){background:#1b3032;border-color:#527269}
 [data-theme="dark"] .sheet-back{background:#493a2f}
 [data-theme="dark"] :is(.sheet-table .changed-cell,.data-file .row-changed,.data-file .row-problem,.demo-result,.demo-result.problem){background:#533d2a;color:#ffe2c5;border-color:#9d7d61}
 [data-theme="dark"] :is(.data-file .row-matched,.demo-result.success){background:#274c3c;color:#d8f4df}
 [data-theme="dark"] :is(.floating-result,.stack-ribbon,.about-section){background:#0b1517;color:#f1f2e9}
 [data-theme="dark"] :is(.demo-guide,.contact-section,.contact){background:#20473f;color:#f1f2e9}
 [data-theme="dark"] :is(.about-grid .eyebrow,.contact-section .eyebrow){color:#9ad9c7}
-[data-theme="dark"] :is(.result-icon,.contact-orb,.contact-arrow,.noscript-note){color:#172f31;background:var(--peach)}
-[data-theme="dark"] :is(.match-token,.scenario.active,.step-title b){background:#9ad9c7;color:#102b27;border-color:#9ad9c7}
-[data-theme="dark"] :is(.demo-main,.data-file th){background:#162629}
-[data-theme="dark"] :is(.file-title,.key-note code,.tags>span){background:#294039;color:var(--ink);border-color:var(--line)}
-[data-theme="dark"] :is(.scenario:hover,.theme-toggle:hover){background:#36584e}
+[data-theme="dark"] :is(.result-icon,.contact-orb,.contact-arrow,.noscript-note,.notification>span){color:#172f31;background:var(--peach)}
+[data-theme="dark"] :is(.match-token,.scenario.active,.step-title b,.v2-lab .lab-tabs button.selected){background:#9ad9c7;color:#102b27;border-color:#9ad9c7}
+[data-theme="dark"] :is(.demo-main,.data-file th,.case-page>.art-disclaimer){background:#162629}
+[data-theme="dark"] :is(.file-title,.key-note code,.tags>span,.v2-lab .lab-tabs button){background:#294039;color:var(--ink);border-color:var(--line)}
+[data-theme="dark"] :is(.scenario:hover,.theme-toggle:hover,.v2-lab .lab-tabs button:hover:not(.selected)){background:#36584e}
 [data-theme="dark"] :is(.demo-tip b){color:#a9ddc2}
 [data-theme="dark"] :is(.amount-field input:disabled){color:#b7c8c2}
-[data-theme="dark"] :is(.solid-button:disabled){background:#33423e;color:#bec9c4;border-color:#65796e;box-shadow:none}
+[data-theme="dark"] :is(.solid-button:disabled,.v2-lab .solid-button:disabled){background:#33423e;color:#bec9c4;border-color:#65796e;box-shadow:none}
 [data-theme="dark"] .result-badge{background:#192d29;color:#f1f2e9}
 [data-theme="dark"] .green-career{background:#24443c}
 [data-theme="dark"] .peach-career{background:#46382e;border-color:#9d7d61}
