@@ -27,4 +27,4 @@ Pushes to `main` deploy to GitHub Pages at https://ankitchandola.github.io/ thro
 ## Validation
 
 Run `npm run build`, `node --test tests/*.test.mjs`, and `python tests/check-site.py`.
-The checks cover the comparison model, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. Browser visual QA was unavailable for this update.
+The checks cover the comparison model, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. They do not replace a rendered visual review in a browser.
