@@ -1,5 +1,6 @@
 /* Shared finishing layer: navigation, current-work scope and colour modes. */
 /* Some :is() lists below still name selectors for removed markup. They set the specificity those dark-theme rules need to beat earlier light-theme rules, so remove them only together with a specificity fix. */
+:is(h1,h2,h3,h4){text-wrap:balance}.career-body h4>span{display:block}
 .site-header,.header{position:relative;border-bottom:0}
 .site-header:after,.header:after{content:"";position:absolute;bottom:0;left:50%;width:100vw;transform:translateX(-50%);height:1px;background:var(--line);pointer-events:none}
 body{overflow-x:clip}
@@ -28,7 +29,8 @@ body{overflow-x:clip}
 .scope-numbers>p{font:400 12px/1.5 var(--body)!important;margin:13px 0 0!important}
 @media(max-width:1050px){.site-header nav,.header nav{gap:18px}.site-header{gap:20px}.current-grid{gap:35px}.scope-numbers>div{grid-template-columns:90px 1fr;gap:16px;padding:20px}.scope-numbers strong{font-size:50px}}
 @media(max-width:800px){.site-header,.header{flex-wrap:wrap;justify-content:space-between;padding-block:22px;gap:18px}.site-header nav,.header nav{width:100%;justify-content:space-between;gap:12px}.site-header nav>a:nth-child(2),.header nav>a:nth-child(2){display:block}.site-header nav a,.header nav a{font-size:14px}.site-header nav .nav-contact{min-height:44px;padding:8px 12px;font-size:14px}.site-header nav .nav-contact svg{width:23px;height:23px}.theme-toggle{width:44px;height:44px}.current-grid{grid-template-columns:1fr}.scope-numbers{max-width:none}.scope-numbers>div{grid-template-columns:100px 1fr}.scope-numbers b{font-size:23px}.scope-numbers small{font-size:15px}.brand-icon{display:block}}
-@media(max-width:430px){.site-header nav,.header nav{flex-wrap:wrap;justify-content:flex-start;gap:8px 18px}.site-header nav .nav-contact,.header nav .header-contact{margin-left:auto;order:2}.theme-toggle{margin-left:auto}.site-header nav>a,.header nav>a{padding:10px 0}.scope-numbers>div{grid-template-columns:85px 1fr;padding:20px;gap:15px}.scope-numbers strong{font-size:48px}.scope-numbers b{font-size:21px}.scope-numbers small{font-size:14px}}
+@media(max-width:430px){.site-header nav,.header nav{flex-wrap:wrap;justify-content:space-between;gap:8px 12px}.site-header nav>a>span:not([aria-hidden]){display:none}:is(.site-header,.header) .theme-toggle{position:absolute;top:29px;right:0}:is(.site-header nav .nav-contact,.header nav .header-contact){padding:8px 12px}:is(.nav-contact,.header-contact) svg{display:none}.site-header nav>a,.header nav>a{padding:10px 0}.scope-numbers>div{grid-template-columns:85px 1fr;padding:20px;gap:15px}.scope-numbers strong{font-size:48px}.scope-numbers b{font-size:21px}.scope-numbers small{font-size:14px}}
+@media(max-width:370px){:is(.site-header,.header) nav{gap:8px 10px}:is(.site-header,.header) nav a{font-size:13px}}
 /* Dark surfaces keep teal and apricot accents, with explicit inverse colours. */
 html[data-theme="dark"]{color-scheme:dark;--paper:#101e20;--white:#182a2d;--surface:#182a2d;--ink:#f1f2e9;--muted:#b7c8c2;--teal:#9ad9c7;--accent:#9ad9c7;--mint:#294a43;--peach:#efb98e;--soft:#233b36;--line:#4c6761}
 [data-theme="dark"] :is(.hero-description,.art-tag,.sheet-header>span:last-child,.sheet-table>div:first-child,.art-invitation div>span,.file-title>span,.demo-result p,.career-outcome,.career-body li:before){color:var(--muted)}
