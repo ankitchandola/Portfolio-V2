@@ -1,6 +1,6 @@
 import React from 'react';
 import {Icon} from './icons';
-// Initial state matches csv-model's initialState(); src/original.js updates these ids in place.
+// Initial state matches csv-model's initialState(); src/home/interactions.js updates these ids in place.
 const before=[['001','Desk lamp','1,250.00'],['002','Notebook set','850.00'],['003','Planter','640.00']];
 function DataFile({title,state,caption,id,children}){return <div className="data-file"><div className="file-title"><b>▤ {title}</b><span>{state}</span></div><table><caption className="sr-only">{caption}</caption><thead><tr><th scope="col">SKU</th><th scope="col">Item</th><th scope="col">Amount ₹</th></tr></thead><tbody id={id}>{children}</tbody></table></div>}
 function row([sku,item,amount]){return <tr key={sku}><td>{sku}</td><td>{item}</td><td>{amount}</td></tr>}
