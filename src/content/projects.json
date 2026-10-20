@@ -208,6 +208,85 @@
     "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records."
   },
   {
+    "slug": "sales-crm",
+    "name": "Sales CRM & Browser Telephony",
+    "kind": "Professional work",
+    "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
+    "tags": [
+      "Vue 3",
+      "Python / Frappe",
+      "MariaDB / Redis",
+      "Exotel"
+    ],
+    "ownership": "I owned the majority of company-specific frontend and Python backend development. The original Frappe CRM platform and initial installation predated my involvement.",
+    "images": [
+      [
+        "crm-lead-detail",
+        "Lead detail",
+        "Sample lead with separate business stage and engagement fields, plus inbound and outbound call activity."
+      ],
+      [
+        "crm-leads-kanban",
+        "Stage board",
+        "Sample leads grouped by configured business stage in the Frappe CRM Kanban view."
+      ],
+      [
+        "crm-leads-list",
+        "Leads list",
+        "Sample lead records and stage, source and owner filters in the Frappe CRM list view."
+      ]
+    ],
+    "sections": [
+      [
+        "Sales workflows and access",
+        "Implemented separate business-stage and engagement-state rules, required-field validation, call dispositions and hierarchy-aware permissions. Visibility and write access are enforced through backend checks as well as the interface."
+      ],
+      [
+        "Browser telephony",
+        "Built the Exotel browser calling interface and backend integration, including inbound and outbound calls, wrap-up notes, dispositions and recording playback. Call correlation, early-event buffering, tab ownership and scheduled reconciliation handle provider and browser lifecycle issues. Provider outcomes determine whether the customer answered; the browser connecting alone is not sufficient."
+      ],
+      [
+        "Quotation review and revision",
+        "Implemented quotation requests, uploads, review, revision and acceptance. Revisions supersede the earlier request and create a linked successor, preserving prior files and feedback. Accepted commercial values synchronise back to the lead, with permissions restricting who can submit and review."
+      ],
+      [
+        "Website intake and attribution",
+        "Built the Python lead-intake API used by the public website, including phone normalisation, matching, eligible reactivation and campaign attribution. Existing closed records are not silently reopened."
+      ],
+      [
+        "Operations handoff",
+        "Implemented an explicit project-creation action with permission and data checks, expiring signed quote-file links and retryable recovery. Completion requires both external project and draft-order identifiers. The inspected CRM and operations revisions use different API contracts, so these notes do not establish live end-to-end compatibility."
+      ],
+      [
+        "Engineering boundaries",
+        "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
+      ]
+    ],
+    "galleryLabel": "CRM screenshot views",
+    "problem": "Sales staff needed one place to receive enquiries, call customers from the browser, obtain and revise quotations and hand confirmed business to operations, with each team seeing and changing only what its role allows.",
+    "challenges": [
+      [
+        "Two call legs, events out of order",
+        "The staff member\u2019s browser can connect even when the customer never answers, and the incoming call signal can arrive before the outbound API response.",
+        "Correlate the provider\u2019s call identifier, buffer early invitations, separate uncertain dial results from failures and treat provider webhooks and scheduled reconciliation as the outcome authority.",
+        "More state-machine logic and provider-specific testing."
+      ],
+      [
+        "One phone per agent",
+        "Several tabs or stale registrations could ring multiple browser instances and interfere with call setup.",
+        "Web Locks keep one active softphone tab, with reconnect policies, generation guards, pinned SDK versions and targeted patches.",
+        "Web Locks do not coordinate separate browsers or machines, and the SDK patches need checking on every upgrade."
+      ],
+      [
+        "Progress is not responsiveness",
+        "One status field cannot show both how far a sale has progressed and whether the customer has gone quiet.",
+        "Separate business stage and engagement state, enforce transitions in Python and connect call dispositions and follow-up retries to the model.",
+        "Two state dimensions must stay consistent across forms, APIs and automation."
+      ]
+    ],
+    "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge."
+  },
+  {
     "slug": "visualization",
     "name": "Project Visualization Library",
     "kind": "Professional work \u00b7 shared package",
@@ -371,84 +450,5 @@
       ]
     ],
     "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging."
-  },
-  {
-    "slug": "sales-crm",
-    "name": "Sales CRM & Browser Telephony",
-    "kind": "Professional work",
-    "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
-    "tags": [
-      "Vue 3",
-      "Python / Frappe",
-      "MariaDB / Redis",
-      "Exotel"
-    ],
-    "ownership": "I owned the majority of company-specific frontend and Python backend development. The original Frappe CRM platform and initial installation predated my involvement.",
-    "images": [
-      [
-        "crm-lead-detail",
-        "Lead detail",
-        "Sample lead with separate business stage and engagement fields, plus inbound and outbound call activity."
-      ],
-      [
-        "crm-leads-kanban",
-        "Stage board",
-        "Sample leads grouped by configured business stage in the Frappe CRM Kanban view."
-      ],
-      [
-        "crm-leads-list",
-        "Leads list",
-        "Sample lead records and stage, source and owner filters in the Frappe CRM list view."
-      ]
-    ],
-    "sections": [
-      [
-        "Sales workflows and access",
-        "Implemented separate business-stage and engagement-state rules, required-field validation, call dispositions and hierarchy-aware permissions. Visibility and write access are enforced through backend checks as well as the interface."
-      ],
-      [
-        "Browser telephony",
-        "Built the Exotel browser calling interface and backend integration, including inbound and outbound calls, wrap-up notes, dispositions and recording playback. Call correlation, early-event buffering, tab ownership and scheduled reconciliation handle provider and browser lifecycle issues. Provider outcomes determine whether the customer answered; the browser connecting alone is not sufficient."
-      ],
-      [
-        "Quotation review and revision",
-        "Implemented quotation requests, uploads, review, revision and acceptance. Revisions supersede the earlier request and create a linked successor, preserving prior files and feedback. Accepted commercial values synchronise back to the lead, with permissions restricting who can submit and review."
-      ],
-      [
-        "Website intake and attribution",
-        "Built the Python lead-intake API used by the public website, including phone normalisation, matching, eligible reactivation and campaign attribution. Existing closed records are not silently reopened."
-      ],
-      [
-        "Operations handoff",
-        "Implemented an explicit project-creation action with permission and data checks, expiring signed quote-file links and retryable recovery. Completion requires both external project and draft-order identifiers. The inspected CRM and operations revisions use different API contracts, so these notes do not establish live end-to-end compatibility."
-      ],
-      [
-        "Engineering boundaries",
-        "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
-      ]
-    ],
-    "galleryLabel": "CRM screenshot views",
-    "problem": "Sales staff needed one place to receive enquiries, call customers from the browser, obtain and revise quotations and hand confirmed business to operations, with each team seeing and changing only what its role allows.",
-    "challenges": [
-      [
-        "Two call legs, events out of order",
-        "The staff member\u2019s browser can connect even when the customer never answers, and the incoming call signal can arrive before the outbound API response.",
-        "Correlate the provider\u2019s call identifier, buffer early invitations, separate uncertain dial results from failures and treat provider webhooks and scheduled reconciliation as the outcome authority.",
-        "More state-machine logic and provider-specific testing."
-      ],
-      [
-        "One phone per agent",
-        "Several tabs or stale registrations could ring multiple browser instances and interfere with call setup.",
-        "Web Locks keep one active softphone tab, with reconnect policies, generation guards, pinned SDK versions and targeted patches.",
-        "Web Locks do not coordinate separate browsers or machines, and the SDK patches need checking on every upgrade."
-      ],
-      [
-        "Progress is not responsiveness",
-        "One status field cannot show both how far a sale has progressed and whether the customer has gone quiet.",
-        "Separate business stage and engagement state, enforce transitions in Python and connect call dispositions and follow-up retries to the model.",
-        "Two state dimensions must stay consistent across forms, APIs and automation."
-      ]
-    ],
-    "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge."
   }
 ]
