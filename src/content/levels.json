@@ -1,0 +1,67 @@
+[
+ {
+  "id": "first-bounce",
+  "title": "First bounce",
+  "hint": "Mirrors turn the beam by 90°. Tap one to turn it.",
+  "rows": [
+   "######",
+   "#>./.#",
+   "#....#",
+   "#..T.#",
+   "######"
+  ]
+ },
+ {
+  "id": "two-turns",
+  "title": "Two turns",
+  "hint": "One mirror is rarely enough.",
+  "rows": [
+   ">../.#",
+   "......",
+   "......",
+   "T..\\./",
+   "......"
+  ]
+ },
+ {
+  "id": "round-and-round",
+  "title": "Round and round",
+  "hint": "Fire first. Then break the circle.",
+  "rows": [
+   "/...\\.",
+   "......",
+   "\\.>./.",
+   "......",
+   "..T.\\.",
+   "......"
+  ]
+ },
+ {
+  "id": "corridors",
+  "title": "Corridors",
+  "hint": "Walls leave only one way through.",
+  "rows": [
+   ">..\\..",
+   ".#....",
+   ".\\.\\#.",
+   "..#...",
+   "..#...",
+   "#/..T."
+  ]
+ },
+ {
+  "id": "long-way-round",
+  "title": "The long way round",
+  "hint": "Not every mirror is on the route.",
+  "rows": [
+   "....\\.",
+   "/.../.",
+   "...#..",
+   "..\\T..",
+   "...#..",
+   "../.\\/",
+   "......",
+   "^....."
+  ]
+ }
+]
