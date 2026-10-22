@@ -7,8 +7,8 @@ export default function Hero(){return <section aria-labelledby="hero-heading" cl
  <div className="hero-copy">
   <p className="eyebrow"><span className="live-dot"></span> HELLO, GOOD TO HAVE YOU HERE</p>
   <h1 id="hero-heading"><span className="sr-only">Ankit Chandola. Full-stack developer.</span><span aria-hidden="true" className="code-name"><span id="morph">{'<ankit chandola>'}</span><span className="caret">_</span></span></h1>
-  <p className="hero-title">Big on the details.<br/><span>Easy to use.</span></p>
-  <p className="hero-description">I build web apps and tools that make complicated work feel a little simpler. From the first click to the systems behind it.</p>
+  <p className="hero-title">Beyond the<br/><span>happy path.</span></p>
+  <p className="hero-description">A duplicated row. A survey saved without a connection. A file full of ambiguous matches. I build web apps and tools that handle them, from the first click to the systems behind it.</p>
   <div className="hero-actions"><a className="button dark" href="#playground">Come try my work <span aria-hidden="true"><Icon name="arrow-down-right"/></span></a><a className="text-link" href={profile.resume} rel="noopener" target="_blank">View résumé <Icon name="arrow-up-right"/></a></div>
   <div className="hero-foot"><span className="location"><LucideSvg name="map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></LucideSvg>{' '}BASED IN DELHI, INDIA</span><button aria-pressed="false" className="motion" id="motion"><Icon name="pause"/><Icon name="play"/><span id="motion-label">Pause motion</span></button><a className="hero-lite-link" href="/lite">Lite version <Icon name="arrow-up-right"/></a></div>
  </div>

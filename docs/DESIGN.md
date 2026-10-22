@@ -56,7 +56,7 @@ The header separator and final footer background extend to the viewport edges; t
 
 ### Main and lite editions
 
-Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these, and the unnumbered Ricochet invitation sits between 04 and 05.
+Projects are not numbered, so section numbers stay the only sequence on the homepage. Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these, and the unnumbered Ricochet invitation sits between 04 and 05.
 
 Lite has its own consecutive numbering: 01 Today, 02 Selected Work, 03 Experience. It may omit How I Work and the interactive demo. Do not leave only a stray 03 label.
 
