@@ -4,6 +4,7 @@ const shapes={
  'arrow-down-right':<><path d="m7 7 10 10"/><path d="M17 7v10H7"/></>,
  'arrow-down':<><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></>,
  'arrow-up':<><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></>,
+ 'arrow-right':<><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></>,
  check:<path d="M20 6 9 17l-5-5"/>,
  sheet:<><rect height="18" rx="2" width="18" x="3" y="3"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 9v12"/><path d="M15 9v12"/></>,
  'arrow-up-down':<><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></>,
