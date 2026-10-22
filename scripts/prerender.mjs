@@ -6,7 +6,7 @@ let home=await readFile('dist/index.html','utf8');
 
 await writeFile('dist/index.html',home.replace('<!--home-html-->',renderHome()).replace('</head>','<link rel="stylesheet" href="/assets/theme.css"></head>'));
 const template=(await readFile('dist/case.html','utf8')).replace('</head>','<link rel="stylesheet" href="/assets/theme.css"></head>');
-const titles=Object.fromEntries([...projects.map(p=>['/work/'+p.slug,p.name]),['/lite','Lite reading version'],['/404','Page not found']]);
+const titles=Object.fromEntries([...projects.map(p=>['/work/'+p.slug,p.name]),['/play','Ricochet'],['/lite','Lite reading version'],['/404','Page not found']]);
 for(const [route,title] of Object.entries(titles)){
  const dir=`dist${route}`;await mkdir(dir,{recursive:true});
  let html=template.replace('<!--app-html-->',render(route)).replace(/<title>.*?<\/title>/,`<title>${title} — Interactive Edition</title>`);
