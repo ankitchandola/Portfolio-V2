@@ -126,7 +126,12 @@
         "Approximate size, one recorded run in Chrome on an M4 with 16 GiB. Not a capacity promise for every device."
       ]
     ],
-    "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool."
+    "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool.",
+    "context": [
+      "Personal project",
+      "Designed and built alone"
+    ],
+    "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats."
   },
   {
     "slug": "operations",
@@ -135,6 +140,8 @@
     "summary": "One platform connecting orders, site surveys, production, dispatch and installation. My work spans the frontend and selected backend services, including the complete offline implementation.",
     "tags": [
       "React / TypeScript",
+      "IndexedDB",
+      "PWA",
       "TanStack Query",
       "Fastify",
       "PostgreSQL"
@@ -191,25 +198,70 @@
     "problem": "Office, factory and site teams work on the same orders at different levels: the order, each unit and each component. Surveyors also work where connectivity is unreliable. The platform keeps order-level coordination consistent with unit and component work, from site survey through installation and handover.",
     "challenges": [
       [
+        "One invalid scan, one failed batch",
+        "A single invalid component could make the backend reject a whole batch of scans.",
+        "Scoped scan manifests and local checks reject unknown, duplicate, already-processed and not-yet-produced components before they enter the batch.",
+        "Locally cached eligibility can become stale, so the backend still revalidates every submission."
+      ],
+      [
         "Reconnect bursts",
-        "Resuming many queued saves at once overloaded connection queues and risked timeouts.",
-        "A shared limit of three in-flight sync operations, bulk survey saves and debounced order refreshes, with targeted backend fixes for connection contention.",
-        "Bounded concurrency can drain the queue more slowly than unrestricted parallel requests."
+        "A reconnect resumed every queued save at once, one per unit. Requests waited in the browser's connection queue with their timeouts already running, so saves timed out while the server was answering and the stuck-save rule discarded them. On the backend, each save held two pool connections, so about 30 concurrent saves could stall a 30-connection pool.",
+        "A shared limit of three in-flight saves, below the handful of connections a browser keeps per host, so each timeout starts only when its request can actually go out. Each save now reads before its transaction and holds one connection, and the order refreshes once per burst instead of after every save.",
+        "Three was set from the browser's connection limit, not from load testing. Bounded concurrency can drain the queue more slowly than unrestricted parallel requests."
       ],
       [
         "Preparing work for offline use",
         "Preparing grids and each unit\u2019s details produced many separate requests.",
         "Bulk grid reads and cursor-paginated unit-detail preparation, supported by matching backend changes.",
         "Bulk payloads still grow with the size of the project hierarchy."
-      ],
-      [
-        "One invalid scan, one failed batch",
-        "A single invalid component could make the backend reject a whole batch of scans.",
-        "Scoped scan manifests and local checks reject unknown, duplicate, already-processed and not-yet-produced components before they enter the batch.",
-        "Locally cached eligibility can become stale, so the backend still revalidates every submission."
       ]
     ],
-    "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records."
+    "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records.",
+    "diagram": {
+      "title": "How an offline survey edit reaches the server",
+      "lanes": [
+        {
+          "steps": [
+            [
+              "Surveyor edits a unit",
+              "Works without a connection"
+            ],
+            [
+              "IndexedDB queue",
+              "Survives reloads",
+              "Saved on device"
+            ],
+            [
+              "Per-unit sequencer",
+              "Keeps each unit's saves in order"
+            ],
+            [
+              "Sync limiter",
+              "At most three in flight"
+            ],
+            [
+              "Bulk save API",
+              "Fastify, one request per batch"
+            ],
+            [
+              "PostgreSQL",
+              "Rejected saves roll back and refetch",
+              "Confirmed by server"
+            ],
+            [
+              "Survey completion",
+              "Requires complete measurements",
+              "Marked surveyed"
+            ]
+          ]
+        }
+      ]
+    },
+    "result": "Surveyors keep recording measurements, photos and installation progress without a connection, and queued work syncs in order on reconnect. Reconnect traffic is bounded, offline preparation uses batched reads instead of per-unit requests, and invalid scans are rejected on the device before a batch is sent. No before-and-after measurement of timeouts or lost saves has been taken yet.",
+    "context": [
+      "One of 4 developers",
+      "4 months, ongoing"
+    ]
   },
   {
     "slug": "sales-crm",
@@ -291,7 +343,46 @@
         "Two state dimensions must stay consistent across forms, APIs and automation."
       ]
     ],
-    "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge."
+    "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge.",
+    "diagram": {
+      "title": "From first call to operations handoff",
+      "lanes": [
+        {
+          "steps": [
+            [
+              "Enquiry",
+              "Website form or incoming call"
+            ],
+            [
+              "Browser call",
+              "Exotel softphone, outcome confirmed by webhook"
+            ],
+            [
+              "Lead",
+              "Qualified and moved through enforced stages"
+            ],
+            [
+              "Quotation",
+              "Requested, uploaded, reviewed and revised"
+            ],
+            [
+              "Accepted",
+              "Final quote fields lock on the lead"
+            ],
+            [
+              "Handoff",
+              "Creates the operations project and draft order",
+              "Won"
+            ]
+          ]
+        }
+      ]
+    },
+    "result": "Enquiries, calls, quotations and the operations handoff live in linked records with enforced stage rules. A confirmed lead creates its operations project and draft order from the CRM, and a failed handoff stays retryable instead of looking complete.",
+    "context": [
+      "One of 2 developers",
+      "3 months of build, now in maintenance"
+    ]
   },
   {
     "slug": "visualization",
@@ -348,6 +439,12 @@
     "problem": "Operations staff and customers need the same project and unit information for different jobs: staff select, survey and track units, while customers follow progress. Without a shared package, each application would build and maintain its own project-tracking interface.",
     "challenges": [
       [
+        "Reliable photo uploads",
+        "A cancelled upload could resolve later and reappear, concurrent completions could drop images, and a form could submit before photo URLs existed.",
+        "Track local upload identities, ignore cancelled results, read current state on each completion and hold submission while uploads run.",
+        "Cancelling hides the result but cannot abort the request, because the host\u2019s upload callback exposes no abort."
+      ],
+      [
         "One interface, two hosts",
         "The two applications use different routers, React versions and data layers.",
         "Typed props, callbacks and a host-supplied fetcher. The package contains no router, API client or credentials, and React stays a peer dependency.",
@@ -358,12 +455,6 @@
         "A restored selection could arrive before the host had finished loading which units are disabled.",
         "Re-prune the selection whenever disabled units change, not only on the first render.",
         "Selection state has to stay synchronised with inputs that change after mount."
-      ],
-      [
-        "Reliable photo uploads",
-        "A cancelled upload could resolve later and reappear, concurrent completions could drop images, and a form could submit before photo URLs existed.",
-        "Track local upload identities, ignore cancelled results, read current state on each completion and hold submission while uploads run.",
-        "Cancelling hides the result but cannot abort the request, because the host\u2019s upload callback exposes no abort."
       ]
     ],
     "facts": [
@@ -378,7 +469,43 @@
         "File count in the inspected revision. Not a test-case or coverage count."
       ]
     ],
-    "limits": "No authentication, database, persistence or offline queue. The package presents states supplied by its host, and the backend owns permissions and business rules. It is a data-driven progress view, not a 3D or CAD renderer."
+    "limits": "No authentication, database, persistence or offline queue. The package presents states supplied by its host, and the backend owns permissions and business rules. It is a data-driven progress view, not a 3D or CAD renderer.",
+    "diagram": {
+      "title": "What the package owns, and what it leaves to others",
+      "columns": [
+        [
+          "The package",
+          [
+            "Virtualised grids and hierarchy navigation",
+            "Unit selection and detail panels",
+            "Survey forms and photo interactions",
+            "Progress colours and legends"
+          ]
+        ],
+        [
+          "Each host application",
+          [
+            "Authentication and routing",
+            "API client, supplied as a fetcher",
+            "Persistence and the offline queue",
+            "Product-specific validation"
+          ]
+        ],
+        [
+          "The backend",
+          [
+            "Authoritative records",
+            "Permissions and transitions",
+            "Aggregate progress data"
+          ]
+        ]
+      ]
+    },
+    "result": "The operations and customer applications render project hierarchies from one package instead of two separate implementations. It ships as versioned ESM and CommonJS builds with type declarations through a tag-triggered release workflow.",
+    "context": [
+      "Sole developer for the initial build",
+      "1 month, now receiving updates"
+    ]
   },
   {
     "slug": "website-cms",
@@ -462,6 +589,54 @@
         "Both applications share one instance\u2019s memory, CPU and failure domain. It is not a highly available setup."
       ]
     ],
-    "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging."
+    "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging.",
+    "diagram": {
+      "title": "Two paths through one website",
+      "lanes": [
+        {
+          "title": "Enquiry",
+          "steps": [
+            [
+              "Visitor submits a form",
+              "Campaign context travels with it"
+            ],
+            [
+              "Server action",
+              "Validates with Zod; CRM credentials stay on the server"
+            ],
+            [
+              "Frappe CRM",
+              "Creates, matches or reactivates the lead"
+            ],
+            [
+              "Outcome page",
+              "Thank-you or closed-match follow-up"
+            ]
+          ]
+        },
+        {
+          "title": "Content",
+          "steps": [
+            [
+              "Editor publishes in Strapi",
+              "Article blocks, SEO fields"
+            ],
+            [
+              "Media in S3",
+              "Accessed through an instance role"
+            ],
+            [
+              "SSR page",
+              "Each block rendered by its own component"
+            ]
+          ]
+        }
+      ]
+    },
+    "result": "Lead delivery moved from Freshworks to the company's Frappe CRM while keeping the website's form workflows and attribution payloads. Editors publish articles from Strapi without a code release.",
+    "context": [
+      "Sole developer for the initial build",
+      "2 months, now receiving updates"
+    ]
   }
 ]
