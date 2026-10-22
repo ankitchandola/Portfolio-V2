@@ -10,7 +10,7 @@ export default function Hero(){return <section aria-labelledby="hero-heading" cl
   <p className="hero-title">Beyond the<br/><span>happy path.</span></p>
   <p className="hero-description">A duplicated row. A survey saved without a connection. A file full of ambiguous matches. I build web apps and tools that handle them, from the first click to the systems behind it.</p>
   <div className="hero-actions"><a className="button dark" href="#playground">Come try my work <span aria-hidden="true"><Icon name="arrow-down-right"/></span></a><a className="text-link" href={profile.resume} rel="noopener" target="_blank">View résumé <Icon name="arrow-up-right"/></a></div>
-  <div className="hero-foot"><span className="location"><LucideSvg name="map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></LucideSvg>{' '}BASED IN DELHI, INDIA</span><button aria-pressed="false" className="motion" id="motion"><Icon name="pause"/><Icon name="play"/><span id="motion-label">Pause motion</span></button><a className="hero-lite-link" href="/lite">Lite version <Icon name="arrow-up-right"/></a></div>
+  <div className="hero-foot"><span className="location"><LucideSvg name="map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></LucideSvg>{' '}BASED IN DELHI, INDIA</span><a className="hero-lite-link" href="/lite">Lite version <Icon name="arrow-up-right"/></a></div>
  </div>
  <a aria-label="Try the interactive CSV and Excel comparison demo" className="hero-art" href="#playground">
   <div className="orbit orbit-one"></div><div className="orbit orbit-two"></div>
@@ -20,6 +20,6 @@ export default function Hero(){return <section aria-labelledby="hero-heading" cl
    <Sheet side="front" file="today.xlsx" note="THE LATEST" number="02" changed/>
    <div className="match-token"><Icon name="check"/></div><div className="floating-result"><span className="result-icon"><Icon name="arrow-up-right"/></span><div><b>One change. Found.</b><span>Even when the rows move.</span></div></div>
   </div>
-  <div className="art-invitation"><span className="play-icon"><Icon name="arrow-up-right"/></span><div><b>This one is yours to play with.</b><span>Try the live demo below</span></div><span className="curved-arrow"><Icon name="arrow-down"/></span></div>
+  <div className="art-invitation"><div><b>This one is yours to play with.</b><span>Try the live demo below</span></div><span className="curved-arrow"><Icon name="arrow-down"/></span></div>
  </a>
 </section>}

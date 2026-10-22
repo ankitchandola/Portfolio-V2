@@ -15,5 +15,5 @@ function SiteFooter(){return <footer className="wrap"><span>© {year} {profile.n
 export default function Home(){return <>
  <a className="skip" href="#main">Skip to content</a>
  <SiteHeader/>
- <main id="main"><Hero/><StackRibbon/><CurrentWork/><SelectedWork/><HowIWork/><Decisions/><Career/><PlayInvite/><Contact/></main><SiteFooter/>
+ <main id="main"><Hero/><StackRibbon/><CurrentWork/><SelectedWork/><PlayInvite/><HowIWork/><Decisions/><Career/><Contact/></main><SiteFooter/>
 </>}

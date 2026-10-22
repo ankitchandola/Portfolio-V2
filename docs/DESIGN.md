@@ -56,7 +56,7 @@ The header separator and final footer background extend to the viewport edges; t
 
 ### Main and lite editions
 
-Projects are not numbered, so section numbers stay the only sequence on the homepage. Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these, and the unnumbered Ricochet invitation sits between 04 and 05.
+Projects are not numbered, so section numbers stay the only sequence on the homepage. Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these, and the unnumbered Ricochet invitation sits immediately after all Selected Work projects, before How I Work.
 
 Lite has its own consecutive numbering: 01 Today, 02 Selected Work, 03 Experience. It may omit How I Work and the interactive demo. Do not leave only a stray 03 label.
 
@@ -70,6 +70,12 @@ Both editions retain current employment: Green Fortune Technologies, followed by
 
 Lite remains script-free after prerendering. Project descriptions may expand on hover, must also appear on keyboard focus, and must remain available on touch devices without hover. Do not add a nonfunctional theme toggle to the script-free page.
 
+### Phone layouts
+
+At 700px and below, use the full reading column for content. Scope summaries become three numbered rows, with the name and detail beside each number. Lite experience numbers sit beside the date; employer descriptions span the full width below. Lite project descriptions stay visible at phone widths regardless of pointer type.
+
+Use 17–18px reading text and labels of at least 13px. Project introductions use 18px body copy and responsive 36–48px titles. Gallery controls form two columns with 48px touch targets, and screenshots remain uncropped. The demo uses fewer nested gutters, larger controls and a stacked result. Keep navigation visible, and place the theme control beside the wordmark. These changes are scoped to phone widths so desktop composition is preserved.
+
 ## Components
 
 ### Work and project details
@@ -82,15 +88,23 @@ Detail pages follow one order: heading (with an optional one-line context of rol
 
 Prefer actual sanitised screenshots with clear captions. If an illustration is necessary, depict the project's real purpose and flow; avoid decorative generic dashboards. Never invent metrics or plausible business records and present them as evidence.
 
-Gallery controls must clearly invite interaction, show the selected view, expose accessible names and preserve keyboard operation. Keep useful screenshot context visible. Previews are fixed 16:10 frames with no nested scrolling; a screenshot whose key area is small gets a `left top width` focus (percent of the image) in `projects.json`, and the caption's Open full screenshot link shows the whole image. Leave the focus out when the important parts sit far apart. Full-size images may open separately with an explicit link and safe external-link attributes. Do not recolour screenshots to match the portfolio.
+Gallery controls must clearly invite interaction, show the selected view, expose accessible names and preserve keyboard operation. Keep useful screenshot context visible. Always show the entire screenshot at its natural aspect ratio, with responsive width and automatic height. Do not crop, zoom, transform or apply focus metadata to project previews, on either the homepage or detail pages. Full-size images may open separately with an explicit link and safe external-link attributes. Do not recolour screenshots to match the portfolio.
+
+The current-work summary has no bottom separator. Flagship project metadata appears as filled tags below the title. Technology tags use a very light neutral tint with a quiet border and readable text. The three flagship benefits retain their heading/body hierarchy and icons without a coloured panel or icon discs. Small icons align with the headings; each description starts directly beneath its heading text.
+
+Screenshot galleries use an open composition: underlined view selectors, a bordered image frame and a caption below without an enclosing card. The original card styling remains available for comparison with `?gallery=original` on the homepage or a project detail URL; omitting the query uses the new frame. Both retain the same complete screenshots and keyboard controls; neither version crops or zooms the images.
+
+Project challenges have sequential two-digit numbers and 24px between each title and its description list. Previous/next navigation uses open text links beneath a single top rule, without card borders.
 
 ### Experience
 
-Use large sequence numbers, not unexplained icons. Give each number its own accent family. Maintain readable tags and a clear separation between employer, role, dates, responsibilities and supported outcomes.
+Use large sequence numbers, not unexplained icons. The first two cards use lighter mint (`#E4EEE7`) and apricot (`#F5E6D8`) surfaces in light mode; keep their existing dark-theme surfaces. Give each number its own accent family. Maintain readable tags and a clear separation between employer, role, dates, responsibilities and supported outcomes.
 
 When cards stack, the previous card's separator must not show through. Use opaque surfaces and check actual scrolling behaviour. On narrow screens use normal document flow rather than a cramped sticky stack.
 
 ### Engineering Decisions
+
+On devices with a fine pointer, hovering for a moment (150ms) temporarily opens a decision, and only one hover preview is open at a time; leaving closes it unless focus remains within it. Clicking pins a hover-open decision; subsequent clicks close it. Native click/keyboard/touch access remains available. Do not show a divider between its summary and expanded content.
 
 Expanded content currently has two blocks: Implementation and Boundary. Use two equal columns on wide screens and one column on mobile. Align the content with the title text, leaving space for the summary number. Put the project link on its own full-width row.
 
@@ -98,7 +112,7 @@ Existing desktop alignment uses an 86px left inset (60px number plus 26px gap), 
 
 ### Ricochet puzzle
 
-`/play` is a side project and is labelled as one. It makes no claims about professional work and never appears in Selected Work, Engineering Decisions or Evidence. Visitors find it through an unnumbered homepage invitation between Today & Yesterday and Contact: a plain link with no client script, styled as an outlined secondary action, using neither the contact teal block nor the footer colour. Lite and the footer do not link to it.
+`/play` is a side project and is labelled as one. It makes no claims about professional work and never appears in Selected Work, Engineering Decisions or Evidence. Visitors find it through an unnumbered homepage invitation immediately after Selected Work: a plain link with no client script, styled as an outlined secondary action, using neither the contact teal block nor the footer colour. Lite and the footer do not link to it.
 
 The rules are deliberately small. Double-sided mirrors toggle between `/` and `\`, walls block, leaving the grid escapes, the target ends the shot, and the beam passes through its own source. That last rule is what makes loops possible: every rule is reversible, so a loop always returns to the first state. One-way pieces, splitters or multiple targets need their own design rather than a quiet extension.
 
@@ -114,7 +128,7 @@ Reuse existing teal primary actions, outlined secondary actions, restrained offs
 
 The main hero cycles through `<ankit chandola>`, `</>`, `<full stack developer>`, `<problem solver>` and `<tool builder>`. Keep a stable accessible identity alongside decorative animation. The skills banner runs continuously with relevant technologies.
 
-Respect reduced-motion preferences and the existing pause control. Sections that start below the fold enter once with a short 70ms stagger, and only when motion is allowed and not paused. Content is visible without JavaScript. Pressable controls give press feedback; hover transforms apply only on devices that can hover. Gallery views crossfade in 180ms. Essential content must not depend on animation. Use short, restrained transitions for actions and expansion. 3D is optional only when it explains the work; do not add it as ambient decoration or a prerequisite to reading.
+Respect reduced-motion preferences. Place the pause control at the trailing edge of the skills banner, outside the hero copy. Centre the banner type optically within the band. The hero invitation uses only one downward arrow. Sections that start below the fold enter once with a short 70ms stagger, and only when motion is allowed and not paused. Content is visible without JavaScript. Pressable controls give press feedback; hover transforms apply only on devices that can hover. Gallery views crossfade in 180ms. Essential content must not depend on animation. Use short, restrained transitions for actions and expansion. 3D is optional only when it explains the work; do not add it as ambient decoration or a prerequisite to reading.
 
 Interactive demonstrations must be visibly inviting before the first click: explain what to try, show controls, indicate the result and make reset clear. Label simplified sample data. The portfolio's CSV demo has deliberately limited scope; it is not the full Recon Desk engine.
 

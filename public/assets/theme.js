@@ -1,5 +1,6 @@
 // One shared preference across the homepage and case-study routes.
 (() => {
+ document.documentElement.dataset.gallery = new URLSearchParams(location.search).get('gallery') === 'original' ? 'original' : 'refined';
  const media = matchMedia('(prefers-color-scheme: dark)');
  const apply = theme => {
   document.documentElement.dataset.theme = theme;
