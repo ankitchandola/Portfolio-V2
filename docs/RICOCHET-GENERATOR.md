@@ -44,11 +44,12 @@ What the prototype taught:
 
 1. **Lay the route.**
    - Choose a random source cell and direction.
-   - Walk 1–3 cells in a straight line, without revisiting a cell or leaving the grid.
+   - Start in a direction with at least 2 free cells ahead. Walk a random distance, from 1 cell up to all the free room ahead, without revisiting a cell or leaving the grid.
+   - Turn only towards a perpendicular direction that has room. If neither has room, abandon the attempt. (An earlier draft walked a fixed 1–3 cells and gave up at any obstacle, which wasted 50–80% of attempts and made Easy's minimum route length nearly unreachable.)
    - At each corner, place a mirror facing the way that makes the turn. This is the solved orientation.
    - After `turns` corners, end the route on the target.
    - If the walk gets stuck, start the attempt again.
-2. **Place decoys where wrong turns lead.** Pick a route mirror and look along its _other_ exit direction. Place a decoy, facing a random way, 1–3 cells along that line. Decoys therefore catch the beam when a player turns a mirror the wrong way.
+2. **Place decoys where wrong turns lead.** Pick a route mirror and look along its _other_ exit direction. Place a decoy, facing a random way, 1–3 cells along that line, retrying up to 6 times per decoy. Decoys therefore catch the beam when a player turns a mirror the wrong way.
 3. **Add walls** on empty cells that are not on the route.
 4. **Hide the answer.** Flip exactly `scramble` of the route mirrors.
 5. **Check the result** using the solver:
@@ -89,13 +90,13 @@ An impossible configuration throws an error. It does not return `null`.
 
 ### Presets
 
-| Preset | Constraints                                                                                   |
-| ------ | --------------------------------------------------------------------------------------------- |
-| Easy   | `{w:6, h:5, turns:2, decoys:1, walls:3, scramble:2, rotations:{min:2, max:2}}`                |
-| Medium | `{w:6, h:6, turns:4, decoys:2, walls:4, scramble:3, rotations:{min:3, max:3}}`                |
-| Hard   | `{w:6, h:8, turns:5, decoys:3, walls:5, scramble:5, rotations:{min:4, max:8}, loopTrap:true}` |
+| Preset | Constraints                                                                                       |
+| ------ | ------------------------------------------------------------------------------------------------- |
+| Easy   | `{w:6, h:5, turns:2, decoys:1, walls:3, scramble:2, rotations:{min:2, max:2}}`                    |
+| Medium | `{w:6, h:6, turns:4, decoys:2, walls:4, scramble:3, rotations:{min:3, max:3}}`                    |
+| Hard   | `{w:6, h:8, turns:5, decoys:3, walls:5, scramble:5, rotations:{min:4, max:8}, loopTrap:'prefer'}` |
 
-The `loopTrap` acceptance rate has not been measured yet. If Hard drops below 20% acceptance with it on, make it a preference instead of a requirement: try with it, and fall back without it.
+**Measured:** with the loop trap required, Hard accepted only 0.9% of attempts, and its worst case was 165 ms. Without it, Hard accepts 26% with a worst case of 4 ms. So Hard uses `loopTrap: 'prefer'`: the first 40 attempts require a loop trap, and later attempts do not. About a third of Hard levels end up with a loop trap. Hard averages about 20 ms per puzzle, with a worst case of about 50 ms. Easy and Medium average under 1 ms.
 
 ### Quality heuristics
 
@@ -103,7 +104,7 @@ All of these are checked in step 5:
 
 - **Coverage.** The route spans at least 4 columns and at least `h − 2` rows. No more than 2 consecutive rows or columns may be completely empty.
 - **Route length.** The route enters at least `w + h − 2` cells.
-- **Tempting decoy.** At least one decoy sits on the line a wrong turn sends the beam along. Step 2 does this by construction; the check confirms that placement succeeded.
+- **At least one decoy.** If `decoys > 0`, at least one decoy must actually have been placed. Without one, every mirror on the board is wrong and the puzzle reduces to "flip them all". Early Easy samples showed exactly this. Step 2 puts decoys on wrong-turn lines by construction.
 - **Not already solved.** The starting layout does not hit.
 
 These numbers are starting points. Tune them while play-testing, and record the final values in the tests.
@@ -210,7 +211,7 @@ Two small conveniences are stored in the browser. Neither is needed to play.
 
 `tests/generate.test.mjs` covers the following.
 
-- **Properties, for 500 seeds per preset:**
+- **Properties, for 200 Easy, 200 Medium and 30 Hard seeds.** (500 per preset would take about 10 s, because Hard is slower.)
   - every level parses and is within its size and mirror caps;
   - it is not already solved;
   - its minimum rotations are inside `rotations`;
