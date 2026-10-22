@@ -56,7 +56,7 @@ The header separator and final footer background extend to the viewport edges; t
 
 ### Main and lite editions
 
-Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these.
+Main sections: 01 Selected Work, 02 How I Work, 03 Engineering Decisions, 04 Today & Yesterday, 05 Contact. The current-work summary appears before these, and the unnumbered Ricochet invitation sits between 04 and 05.
 
 Lite has its own consecutive numbering: 01 Today, 02 Selected Work, 03 Experience. It may omit How I Work and the interactive demo. Do not leave only a stray 03 label.
 
@@ -96,6 +96,16 @@ Expanded content currently has two blocks: Implementation and Boundary. Use two 
 
 Existing desktop alignment uses an 86px left inset (60px number plus 26px gap), 48px column gap and 24px row gap. Mobile removes the inset. Do not preserve an empty third column from an older accordion design. Check open and closed states with long content.
 
+### Ricochet puzzle
+
+`/play` is a side project and is labelled as one. It makes no claims about professional work and never appears in Selected Work, Engineering Decisions or Evidence. Visitors find it through an unnumbered homepage invitation between Today & Yesterday and Contact: a plain link with no client script, styled as an outlined secondary action, using neither the contact teal block nor the footer colour. Lite and the footer do not link to it.
+
+The rules are deliberately small. Double-sided mirrors toggle between `/` and `\`, walls block, leaving the grid escapes, the target ends the shot, and the beam passes through its own source. That last rule is what makes loops possible: every rule is reversible, so a loop always returns to the first state. One-way pieces, splitters or multiple targets need their own design rather than a quiet extension.
+
+Levels live in `src/content/levels.json` as row strings. Keep them at most 6 columns wide so mirror cells stay at least 44px on a 320px screen, and at most 8 mirrors so the test solver can enumerate every layout. Each level starts unsolved, and its minimum rotation count is pinned in `tests/play.test.mjs`. Change that number deliberately, and play a changed level by hand; solvable is not the same as enjoyable.
+
+The board is SVG with a real button over each mirror, named by row, column and slant. Each shot's outcome is announced in a status region with an icon and text. Reset is enabled whenever a beam is shown or a mirror has moved. There are no single-key shortcuts. Progress is stored under `ricochet-solved`, loaded after hydration and saved only when a shot newly hits. Board colours are the `--rc-*` tokens in `src/play/play.css` and are checked at 3:1 in `tests/check-site.py`; loop dashes use the board surface colour over the beam. The beam draws in at most 600ms and mirrors turn in 120ms, both instant under reduced motion.
+
 ### Actions and icons
 
 Reuse existing teal primary actions, outlined secondary actions, restrained offset shadows and small corner radii. Keep the contact CTA in the same visual family. Use Lucide consistently; prefer icons around 24px and comfortable controls of at least 44px. Icon-only buttons need accessible labels. Draw icons from the Lucide set in `src/home/icons.jsx`; do not use unicode glyphs (▤ ✓ ✳ ↺ ⇅) as icons. Footer social links include recognisable GitHub and LinkedIn icons alongside names.
@@ -122,7 +132,9 @@ Keep internal project names and private infrastructure identifiers anonymous. Us
 - `src/home/`: homepage section components. They are rendered to static markup and never hydrated.
 - `src/content/projects.json`: homepage project sections, engineering decisions, project details and lite summaries.
 - `src/content/profile.js`: contact links, résumé path and the current-scope list shared by the homepage and lite.
-- `src/App.jsx`: lite, project detail and 404 layouts.
+- `src/App.jsx`: lite, project detail, `/play` and 404 layouts.
+- `src/play/`: the Ricochet model, progress storage, page component and its stylesheet; `src/content/levels.json` holds the levels and `tests/solve.mjs` the test-only solver.
+- `src/home/PlayInvite.jsx`: the homepage invitation to `/play`, styled in `public/assets/v2.css`.
 - `src/home/client.js`, `src/home/interactions.js`: homepage galleries and interactions, attached to the static markup by element ids and data attributes.
 - `public/assets/style.css`, `v2.css`: main styles; some legacy rules remain.
 - `src/style.css`, `src/case-theme.css`: detail and lite styles.
@@ -133,7 +145,7 @@ Update all affected representations together. Prefer editing the relevant existi
 
 ## Review before shipping UI changes
 
-Run `npm run build` and `python tests/check-site.py`. Run `npm test` when changing comparison behaviour. Static checks cover selected contrast pairs and output structure; they do not replace rendered visual review.
+Run `npm run build` and `python tests/check-site.py`. Run `npm test` when changing comparison or puzzle behaviour. Static checks cover selected contrast pairs and output structure; they do not replace rendered visual review.
 
 When browser review is available, inspect light/dark themes at 375, 768, 1024 and 1440px, plus a narrow 320px check. Review expanded accordions, experience stacking, gallery controls, keyboard focus, touch access, footer width and lite layout. Aim for at least 4.5:1 normal-text contrast and 3:1 large-text/control contrast. Never communicate meaning by colour alone.
 

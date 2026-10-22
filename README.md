@@ -12,6 +12,8 @@ Project descriptions are based on the supplied project Markdown notes and direct
 - Public Brand Website & CMS: SSR website, Frappe integration, Strapi configuration and shared EC2 staging setup.
 - Sales CRM & Browser Telephony: custom CRM workflows and call handling on the existing Frappe platform.
 
+Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the homepage. Its rules and level constraints are in the design guide.
+
 `src/content/projects.json` supplies the homepage project sections, engineering decisions, project detail pages and lite summaries. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
 
 ## Design and development
@@ -27,4 +29,4 @@ Pushes to `main` deploy to GitHub Pages at https://ankitchandola.github.io/ thro
 ## Validation
 
 Run `npm run build`, `node --test tests/*.test.mjs`, and `python tests/check-site.py`.
-The checks cover the comparison model, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. They do not replace a rendered visual review in a browser.
+The checks cover the comparison model, the puzzle model and levels, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. They do not replace a rendered visual review in a browser.
