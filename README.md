@@ -20,11 +20,34 @@ Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the
 
 Read [the design language](docs/DESIGN.md) for the palette, typography, layout, component, motion and content rules. [AGENTS.md](AGENTS.md) directs future coding assistants to follow it.
 
-Run `npm ci` to install dependencies, then `npm run dev` for local development. `npm run build` produces the prerendered site in `dist/`.
+Use Node 24 (`nvm use`, or install the version in `.nvmrc`) and npm. Python 3
+must be available as `python3` for the generated-site checks; they use only its
+standard library. GitHub's Ubuntu runners provide it.
+
+Run `npm ci` to install dependencies, then `npm run dev` for local development.
+`npm run build` produces the prerendered site in `dist/`.
 
 ## Deployment
 
-Pushes to `main` deploy to GitHub Pages at https://ankitchandola.github.io/ through `.github/workflows/deploy.yml`, which runs the tests, build and site checks first. The site URL used for canonical links and the sitemap is set in `scripts/prerender.mjs`.
+`.github/workflows/deploy.yml` runs `npm run check` on pull requests, pushes to
+`main` and manual runs. Validation has read-only repository permissions and never
+uploads Pages artifacts. New runs cancel older validation for the same PR or
+branch.
+
+After successful validation, pushes to `main` publish to
+https://ankitchandola.github.io/. Manual runs publish only when run on `main`
+with the **deploy** input explicitly enabled. Publication rebuilds the same
+commit in its own job; only that job receives Pages/OIDC write permissions and
+uploads the Pages artifact. Deployments are serialized separately from
+validation and use the `github-pages` environment. The site URL used for
+canonical links and the sitemap is set in `scripts/prerender.mjs`.
+
+**Owner setup after this workflow lands:** require the **Validate** status check
+in the ruleset or branch protection for `main`, after its first successful run.
+Branch protection was not changed from this checkout: the active GitHub account
+has read-only access and the new check has not been published yet. Configure
+required reviewers on the `github-pages` environment if an additional human
+deployment approval is desired.
 
 ## Validation
 
@@ -32,5 +55,19 @@ Run `npm run format` to format maintained source and documentation, or
 `npm run format:check` to verify formatting without changing files. Generated
 output, dependencies, local tool artifacts and third-party assets are excluded.
 
-Run `npm run build`, `node --test tests/*.test.mjs`, and `python tests/check-site.py`.
-The checks cover the comparison model, the puzzle model and levels, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. They do not replace a rendered visual review in a browser.
+Run `npm run check` for formatting verification, zero-warning lint, model tests,
+the production build and generated-site checks, in that order. Individual commands
+are `npm run format:check`, `npm run lint`, `npm test`, `npm run build` and
+`npm run check:site` (the last requires an existing `dist/` build).
+
+ESLint covers application JS/JSX, Node scripts/tests, Vite and ESLint
+configuration, and the public theme script, with separate browser and Node
+globals. JSX uses the recommended React Hooks and accessibility rules. ESLint
+stays on version 9 while the React/JSX accessibility plugins declare support
+through that major. Browser storage is optional: documented catches keep theme
+and motion controls usable when persistence is blocked.
+
+The checks cover the comparison model, the puzzle model and levels,
+prerendered links and assets, headings, duplicate IDs, script-free lite output
+and principal palette contrast. They do not replace a rendered visual review
+in a browser.

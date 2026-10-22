@@ -1,4 +1,4 @@
-import { initialState, original, evaluate, money } from '../csv-model.js';
+import { initialState, evaluate, money } from '../csv-model.js';
 const $ = (id) => document.getElementById(id);
 let state = initialState();
 const amount = $('amount'),
@@ -200,7 +200,9 @@ motionButton.addEventListener('click', () => {
   paused = !paused;
   try {
     localStorage.setItem('ankit-motion-paused', String(paused));
-  } catch {}
+  } catch {
+    // Motion controls still work when browser storage is unavailable.
+  }
   applyMotion();
 });
 reduced.addEventListener('change', applyMotion);

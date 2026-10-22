@@ -3,7 +3,7 @@ import projects from '../content/projects.json';
 import EvidenceGallery from './EvidenceGallery';
 import ReconDemo from './ReconDemo';
 import { Icon, LinkArrow } from './icons';
-function Flagship({ project: p, index }) {
+function Flagship({ project: p }) {
   const home = p.home;
   return (
     <article className="flagship" id={home.anchor}>
@@ -110,7 +110,7 @@ export default function SelectedWork() {
       </div>
       {projects.map((p, i) =>
         p.home ? (
-          <Flagship key={p.slug} project={p} index={i} />
+          <Flagship key={p.slug} project={p} />
         ) : (
           <IntegratedProject key={p.slug} project={p} index={i} />
         ),

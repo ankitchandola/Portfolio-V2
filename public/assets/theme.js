@@ -25,7 +25,9 @@
     apply(theme);
     try {
       localStorage.setItem('ankit-theme', theme);
-    } catch {}
+    } catch {
+      // Theme switching still works when browser storage is unavailable.
+    }
   });
   document.addEventListener('keydown', (event) => {
     const menu = document.querySelector('.mobile-navigation[open]');
@@ -37,7 +39,9 @@
   media.addEventListener('change', (event) => {
     try {
       if (localStorage.getItem('ankit-theme')) return;
-    } catch {}
+    } catch {
+      // Without stored preferences, follow the system theme.
+    }
     apply(event.matches ? 'dark' : 'light');
   });
 })();
