@@ -42,6 +42,9 @@ const browserStorage = () => {
     return null;
   }
 };
+// The beam starts at the source arrow's tip and stops at the target's outer ring, in cell units from the centre.
+const SOURCE_TIP = 0.2;
+const TARGET_RADIUS = 0.34;
 const PRESET_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 const MODES = [
   ['campaign', 'Levels'],
@@ -121,22 +124,29 @@ function describe(level) {
 }
 function beamPoints(level, shot) {
   const centre = ({ x, y }) => [x + 0.5, y + 0.5];
-  const points = [centre(level.source), ...shot.path.map(centre)];
+  const [dx, dy] = DIRS[level.source.dir];
+  const tip = [
+    level.source.x + 0.5 + dx * SOURCE_TIP,
+    level.source.y + 0.5 + dy * SOURCE_TIP,
+  ];
+  const points = [tip, ...shot.path.map(centre)];
   const { x, y, dir } = shot.end;
+  const backFromCentre = (distance) => [
+    x + 0.5 - DIRS[dir][0] * distance,
+    y + 0.5 - DIRS[dir][1] * distance,
+  ];
+  if (shot.outcome === 'hit')
+    points[points.length - 1] = backFromCentre(TARGET_RADIUS);
   if (shot.outcome === 'blocked')
-    points[points.length - 1] = [
-      x + 0.5 - DIRS[dir][0] * 0.5,
-      y + 0.5 - DIRS[dir][1] * 0.5,
-    ];
-  if (shot.outcome === 'escaped')
-    points.push([x + 0.5 - DIRS[dir][0] * 0.5, y + 0.5 - DIRS[dir][1] * 0.5]);
+    points[points.length - 1] = backFromCentre(0.5);
+  if (shot.outcome === 'escaped') points.push(backFromCentre(0.5));
   if (shot.outcome === 'loop') points.push(centre(shot.end));
   return points;
 }
 const toPath = (points) =>
   points.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
 
-function Board({ level, mirrors, shot, shotCount, onRotate }) {
+function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
   const cells = level.rows.flatMap((row, y) =>
     [...row].map((c, x) => ({ c, x, y })),
   );
@@ -181,13 +191,13 @@ function Board({ level, mirrors, shot, shotCount, onRotate }) {
         <g
           className={shot?.outcome === 'hit' ? 'rc-target is-hit' : 'rc-target'}
         >
-          <circle cx={target.x + 0.5} cy={target.y + 0.5} r=".34" />
+          <circle cx={target.x + 0.5} cy={target.y + 0.5} r={TARGET_RADIUS} />
           <circle cx={target.x + 0.5} cy={target.y + 0.5} r=".14" />
         </g>
         <g className="rc-source">
           <circle cx={source.x + 0.5} cy={source.y + 0.5} r=".3" />
           <path
-            d={`M${source.x + 0.5 + dx * 0.2} ${source.y + 0.5 + dy * 0.2} L${source.x + 0.5 - dx * 0.1 + dy * 0.13} ${source.y + 0.5 - dy * 0.1 + dx * 0.13} L${source.x + 0.5 - dx * 0.1 - dy * 0.13} ${source.y + 0.5 - dy * 0.1 - dx * 0.13}Z`}
+            d={`M${source.x + 0.5 + dx * SOURCE_TIP} ${source.y + 0.5 + dy * SOURCE_TIP} L${source.x + 0.5 - dx * 0.1 + dy * 0.13} ${source.y + 0.5 - dy * 0.1 + dx * 0.13} L${source.x + 0.5 - dx * 0.1 - dy * 0.13} ${source.y + 0.5 - dy * 0.1 - dx * 0.13}Z`}
           />
         </g>
         {Object.entries(mirrors).map(([key, m]) => {
@@ -229,6 +239,13 @@ function Board({ level, mirrors, shot, shotCount, onRotate }) {
         )}
       </svg>
       <div className="ricochet-cells">
+        <button
+          type="button"
+          className="ricochet-source"
+          style={{ gridColumn: source.x + 1, gridRow: source.y + 1 }}
+          onClick={onFire}
+          aria-label={`Fire the beam from ${place(source.x, source.y)}, pointing ${pointing[source.dir]}`}
+        />
         {Object.entries(mirrors).map(([key, m]) => {
           const [x, y] = key.split(',').map(Number);
           return (
@@ -476,6 +493,7 @@ export default function Ricochet() {
             shot={state.shot}
             shotCount={shotCount}
             onRotate={(key) => act({ type: 'rotate', key })}
+            onFire={fire}
           />
         </div>
         <div className="ricochet-panel">
@@ -581,7 +599,9 @@ export default function Ricochet() {
             <h2>How to play</h2>
             <ol>
               <li>Tap a mirror to turn it a quarter turn.</li>
-              <li>Press Fire to send the beam.</li>
+              <li>
+                Press Fire, or tap the beam’s starting arrow, to send the beam.
+              </li>
               <li>
                 Reach the target. Walls stop the beam, edges let it escape, and
                 some layouts send it round in circles.

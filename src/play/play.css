@@ -151,7 +151,7 @@
   }
 }
 
-.ricochet-mirror {
+:is(.ricochet-mirror, .ricochet-source) {
   display: block;
   width: 100%;
   height: 100%;
@@ -161,9 +161,9 @@
   border: 0;
   border-radius: 2px;
   background: transparent;
-  transition: background 140ms;
+  transition: box-shadow 140ms;
 }
-.ricochet-mirror:focus-visible {
+:is(.ricochet-mirror, .ricochet-source):focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: -3px;
 }
@@ -304,8 +304,9 @@
 }
 
 @media (hover: hover) {
-  .ricochet-mirror:hover {
-    background: var(--rc-hover);
+  /* The buttons sit above the SVG board, so any fill would cover the mirror or arrow underneath. */
+  :is(.ricochet-mirror, .ricochet-source):hover {
+    box-shadow: inset 0 0 0 2px var(--rc-beam);
   }
   .ricochet-button:not(:disabled):hover,
   :is(.ricochet-levels, .ricochet-modes)
@@ -350,7 +351,7 @@
     animation: none;
   }
   .rc-mirror,
-  .ricochet-mirror,
+  :is(.ricochet-mirror, .ricochet-source),
   :is(
     .ricochet-button,
     :is(.ricochet-levels, .ricochet-modes) button,

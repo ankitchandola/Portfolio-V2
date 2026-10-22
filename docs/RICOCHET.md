@@ -125,9 +125,9 @@ Level 3, "Round and round", relies on this. Its starting layout sends the beam r
 
 ## Drawing the beam
 
-`beamPoints(level, shot)` in `Ricochet.jsx` turns a trace into the corner points of an SVG path. Points sit at cell centres, starting at the source's centre. The end of the line depends on the outcome:
+`beamPoints(level, shot)` in `Ricochet.jsx` turns a trace into the corner points of an SVG path. Points sit at cell centres, except that the line starts at the tip of the source arrow (`SOURCE_TIP`). The end of the line depends on the outcome:
 
-- **hit:** the target's centre;
+- **hit:** the target's outer ring (`TARGET_RADIUS`), so the line never covers the target;
 - **blocked:** the edge of the wall cell. The wall's centre is moved half a cell back towards the beam.
 - **escaped:** the grid boundary, half a cell back from the first coordinate outside the grid;
 - **loop:** the line closes back on the centre of `path[loopStart]`.
