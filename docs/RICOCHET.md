@@ -7,14 +7,17 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 | File                      | Responsibility                                                                                                 |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `src/play/model.js`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
-| `src/play/progress.js`    | Saving and loading solved level ids in `localStorage`                                                          |
-| `src/play/Ricochet.jsx`   | The page: draws the board, wires the buttons to the reducer, saves progress                                    |
-| `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
-| `src/content/levels.json` | The five levels                                                                                                |
 | `src/play/solve.js`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
-| `tests/play.test.mjs`     | Tests for the rules, reducer, progress storage and every shipped level                                         |
+| `src/play/generate.js`    | The seeded level generator, its presets, the daily seed and share-link encoding                                |
+| `src/play/random.js`      | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
+| `src/play/progress.js`    | `localStorage`: solved campaign levels and saved preferences                                                   |
+| `src/play/Ricochet.jsx`   | The page: modes, the board, URL handling, Copy link and saving                                                 |
+| `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
+| `src/content/levels.json` | The five campaign levels                                                                                       |
+| `tests/play.test.mjs`     | Tests for the rules, reducer, storage and every shipped level                                                  |
+| `tests/generate.test.mjs` | Property, snapshot and share-link tests for the generator                                                      |
 
-`model.js` is the only file that knows the rules. The page and the tests both go through it.
+`model.js` is the only file that knows the rules. The solver, the generator, the page and the tests all go through it.
 
 ## The grid
 
@@ -135,24 +138,28 @@ A loop also gets a second, dashed path drawn over the cycle. Each Fire increment
 
 `createReducer(levels)` returns a pure reducer. The state is:
 
-```js
-{
-  (levelIndex, mirrors, history, shot, solved);
-}
-// history: earlier mirror maps, for Undo
-// shot:    the last trace result, or null
-// solved:  ids of solved levels
+```text
+mode        'campaign' | 'random' | 'daily' | 'shared'
+level       the level being played (a campaign level or a generated/shared one)
+levelIndex  the current or most recent campaign level, so Levels reopens it
+preset      'easy' | 'medium' | 'hard' for generated puzzles, otherwise null
+seed        the random seed, or the UTC date for the daily puzzle
+mirrors     current mirror states
+history     earlier mirror maps, for Undo
+shot        the last trace result, or null
+solved      ids of solved campaign levels
 ```
 
-| Action           | Effect                                                                                                                                                                            |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rotate {key}`   | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored.       |
-| `fire`           | `shot = trace(...)`. A hit adds the level id to `solved`. Firing never adds to `history`.                                                                                         |
-| `undo`           | Pops `history` and clears `shot`. Does nothing when `history` is empty.                                                                                                           |
-| `reset`          | Restores the level's starting mirrors and clears `history` and `shot`. `solved` is kept.                                                                                          |
-| `select {index}` | Opens that level from its starting layout.                                                                                                                                        |
-| `next`           | Opens the next unsolved level after the current one, wrapping round. When every level is solved it does nothing, and the page shows the "All five levels solved" message instead. |
-| `loaded {ids}`   | Merges ids loaded from storage into `solved`.                                                                                                                                     |
+| Action                             | Effect                                                                                                                                                                      |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rotate {key}`                     | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored. |
+| `fire`                             | `shot = trace(...)`. In campaign mode a hit adds the level id to `solved`; generated and shared hits never do. Firing never adds to `history`.                              |
+| `undo`                             | Pops `history` and clears `shot`. Does nothing when `history` is empty.                                                                                                     |
+| `reset`                            | Restores the current level's starting mirrors (the campaign level, or the generated puzzle) and clears `history` and `shot`. `solved` is kept.                              |
+| `select {index}`                   | Opens that campaign level from its starting layout and returns to campaign mode.                                                                                            |
+| `next`                             | Campaign only: opens the next unsolved level, wrapping round. When every level is solved, or outside the campaign, it does nothing; the page offers New puzzle instead.     |
+| `load {level, mode, preset, seed}` | Opens a generated or shared level with a clean `history` and `shot`. The page builds the level, so the reducer stays pure.                                                  |
+| `loaded {ids}`                     | Merges ids loaded from storage into `solved`.                                                                                                                               |
 
 Three helpers decide what the page shows:
 
@@ -174,6 +181,15 @@ The order matters because the page is prerendered:
 3. **On a new hit:** the Fire handler saves. It traces once more to find out whether the shot hits, because the reducer's result is not available inside the handler.
 
 Nothing saves "whenever state changes", so the empty first render can never overwrite saved progress.
+
+### Preferences
+
+`ricochet-prefs` holds `{v: 1, mode, preset, dailySolved}`:
+
+- **`mode`** is the last of Levels, Random or Today. `/play` reopens in it, and Random reopens at the saved `preset` with a fresh puzzle.
+- **`dailySolved`** is the UTC date of the last solved puzzle of the day. When it matches today, the page shows "Solved today".
+
+`loadPrefs` drops an unknown version entirely and drops invalid fields one by one. `savePrefs` merges with what is stored. Saves happen in handlers: changing mode, changing difficulty, and a daily hit. The puzzle in progress is deliberately not saved. A `?l=`, `?seed=` or `?mode=today` URL always wins over saved preferences.
 
 ## The solver and level checks
 
@@ -198,6 +214,55 @@ Rotations are toggles and their order does not matter, so the fewest rotations e
 - the beam can touch every mirror.
 
 Level 3 must also be able to loop. The current minimums are 1, 2, 2, 3 and 4.
+
+## Generated levels
+
+`generatePuzzle(seed, constraints)` in `src/play/generate.js` builds a fresh level that is guaranteed to be valid. It builds the answer first, then hides it:
+
+1. **Route.** It walks from a random source, choosing directions that have room. Each straight run goes from 1 cell up to all the free room ahead. Each corner gets a mirror in its solved orientation, and the walk ends on the target after `turns` corners.
+2. **Decoys** go 1–3 cells along the exit a _wrong_ turn would take, so they catch mistakes.
+3. **Walls** go on empty cells that are not on the route.
+4. **Hiding the answer.** It flips `scramble` of the route mirrors.
+5. **Checks** run in a single `analyse(level)` pass over every layout. The level is accepted only if all of these hold:
+   - it does not start solved;
+   - its minimum rotations are within `rotations`;
+   - exactly one beam route reaches the target;
+   - the beam can touch every mirror;
+   - at least one decoy was actually placed;
+   - the route spans at least 4 columns and `h − 2` rows;
+   - the route enters at least `w + h − 2` cells;
+   - no more than 2 consecutive rows or columns are empty.
+6. **Retries.** Up to `maxAttempts` (200), it draws again from the same seeded stream. `generatePuzzle` then tries the derived seeds `seed/1` to `seed/4`, so the result is still deterministic.
+
+| Preset | Grid  | Turns | Decoys | Walls | Rotations | Average / worst time |
+| ------ | ----- | ----- | ------ | ----- | --------- | -------------------- |
+| Easy   | 6 × 5 | 2     | 1      | 3     | 2         | about 1 ms / 4 ms    |
+| Medium | 6 × 6 | 4     | 2      | 4     | 3         | about 1 ms / 3 ms    |
+| Hard   | 6 × 8 | 5     | 3      | 5     | 4–8       | about 20 ms / 50 ms  |
+
+Hard uses `loopTrap: 'prefer'`. Its first 40 attempts must include a layout that loops; later attempts need not. Requiring a loop trap outright passed only 0.9% of attempts. About a third of Hard levels end up with one.
+
+**Seeds.** `mulberry32` is seeded with FNV-1a of `v${GENERATOR_VERSION}:${seed}`, and nothing in the generator calls `Math.random`.
+
+- Random seeds are 6 base-36 characters from `crypto.getRandomValues`.
+- The daily seed is `daily:YYYY-MM-DD` in **UTC**, with the Medium preset.
+- The snapshot tests pin the exact levels for fixed seeds. Any change that alters them must bump `GENERATOR_VERSION`.
+
+**Share links** carry the level itself, not its seed, so they keep working after generator changes:
+
+- The format is `?l=<rows>&d=<preset>`. Rows are joined with `-`, and cells become `.`, `x` (wall), `t` (target), `f` (`/`), `b` (`\`) and `e w n s` (sources).
+- `decodeLevel` treats links as untrusted. Anything malformed, larger than 6 × 8, over 8 mirrors, unsolvable or already solved decodes to `null`. The page then says "That puzzle link isn't valid." and opens level 1.
+
+**URLs.** The page keeps the address bar in step with `history.replaceState`:
+
+| Mode   | URL           |
+| ------ | ------------- |
+| Levels | `/play/`      |
+| Random | `?seed=…&d=…` |
+| Today  | `?mode=today` |
+| Shared | `?l=…`        |
+
+Reloading shows the same puzzle. Copy link always uses `?l=`, so a shared daily puzzle stays the same after midnight.
 
 ## Adding or changing a level
 

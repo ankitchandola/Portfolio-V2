@@ -118,9 +118,18 @@ Existing desktop alignment uses an 86px left inset (60px number plus 26px gap), 
 
 The rules are deliberately small. Double-sided mirrors toggle between `/` and `\`, walls block, leaving the grid escapes, the target ends the shot, and the beam passes through its own source. That last rule is what makes loops possible: every rule is reversible, so a loop always returns to the first state. One-way pieces, splitters or multiple targets need their own design rather than a quiet extension.
 
-Levels live in `src/content/levels.json` as row strings. Keep them at most 6 columns wide so mirror cells stay at least 44px on a 320px screen, and at most 8 mirrors so the test solver can enumerate every layout. Each level starts unsolved, and its minimum rotation count is pinned in `tests/play.test.mjs`. Change that number deliberately, and play a changed level by hand; solvable is not the same as enjoyable.
+Levels live in `src/content/levels.json` as row strings. Keep them at most 6 columns wide so mirror cells stay at least 44px on a 320px screen, and at most 8 mirrors so the solver can enumerate every layout. Each level starts unsolved, and its minimum rotation count is pinned in `tests/play.test.mjs`. Change that number deliberately, and play a changed level by hand; solvable is not the same as enjoyable.
 
 The board is SVG with a real button over each mirror, named by row, column and slant. Each shot's outcome is announced in a status region with an icon and text. Reset is enabled whenever a beam is shown or a mirror has moved. There are no single-key shortcuts. Progress is stored under `ricochet-solved`, loaded after hydration and saved only when a shot newly hits. Board colours are the `--rc-*` tokens in `src/play/play.css` and are checked at 3:1 in `tests/check-site.py`; loop dashes use the board surface colour over the beam. The beam draws in at most 600ms and mirrors turn in 120ms, both instant under reduced motion.
+
+A Levels / Random / Today switch sits above the board. It uses the same pressed-button style as the level picker.
+
+- **Random** offers Easy, Medium and Hard, plus New puzzle.
+- **Today** is one Medium puzzle for everyone, dated in UTC.
+- **Headings** of generated puzzles state what they are, such as `RANDOM · HARD · SEED 5YFHNR` or `PUZZLE OF THE DAY · 22 OCT 2026`. They are titled "Generated puzzle" or "Shared puzzle". Their hint states the actual minimum number of turns, and they are never presented as handcrafted.
+- **Copy link** appears outside the campaign. "Link copied" is announced in the status region; if the clipboard is unavailable, a pre-selected read-only field shows the link.
+- **Saved preferences:** `ricochet-prefs` reopens the last mode and difficulty and records the daily solve. Generated solves never touch campaign progress.
+- **Prerendering:** the page always prerenders level 1. The URL and saved preferences are applied after hydration.
 
 ### Actions and icons
 
@@ -149,7 +158,7 @@ Keep internal project names and private infrastructure identifiers anonymous. Us
 - `src/content/projects.json`: homepage project sections, engineering decisions, project details and lite summaries.
 - `src/content/profile.js`: contact links, résumé path and the current-scope list shared by the homepage and lite.
 - `src/App.jsx`: lite, project detail, `/play` and 404 layouts.
-- `src/play/`: the Ricochet model, progress storage, page component and its stylesheet; `src/content/levels.json` holds the levels and `tests/solve.mjs` the test-only solver.
+- `src/play/`: the Ricochet model, solver, level generator, storage, page component and its stylesheet. `src/content/levels.json` holds the campaign levels. [docs/RICOCHET.md](RICOCHET.md) explains the logic.
 - `src/home/PlayInvite.jsx`: the homepage invitation to `/play`, styled in `public/assets/v2.css`.
 - `src/home/client.js`, `src/home/interactions.js`: homepage galleries and interactions, attached to the static markup by element ids and data attributes.
 - `public/assets/style.css`, `v2.css`: main styles; some legacy rules remain.

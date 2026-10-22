@@ -12,7 +12,7 @@ Project descriptions are based on the supplied project Markdown notes and direct
 - Public Brand Website & CMS: SSR website, Frappe integration, Strapi configuration and shared EC2 staging setup.
 - Sales CRM & Browser Telephony: custom CRM workflows and call handling on the existing Frappe platform.
 
-Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the homepage. Its rules and level constraints are in the design guide; [docs/RICOCHET.md](docs/RICOCHET.md) explains the beam tracing, game state, solver and how to add levels.
+Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the homepage. It has five handcrafted levels, seeded random puzzles at three difficulties, a daily puzzle and shareable puzzle links. Its rules and level constraints are in the design guide; [docs/RICOCHET.md](docs/RICOCHET.md) explains the beam tracing, game state, solver and how to add levels.
 
 `src/content/projects.json` supplies the homepage project sections, engineering decisions, project detail pages and lite summaries. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
 
