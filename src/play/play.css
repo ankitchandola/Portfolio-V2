@@ -228,12 +228,26 @@
 .ricochet-result .solid-button {
   margin-top: 16px;
 }
-.ricochet-result .ricochet-done {
-  margin-top: 12px;
-  flex-wrap: wrap;
-  gap: 8px;
+.ricochet-done {
+  margin-top: 16px;
 }
-.ricochet-done a {
+.ricochet-done > p {
+  margin: 0;
+}
+.ricochet-done-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.ricochet-result .ricochet-done-actions .solid-button {
+  margin-top: 0;
+}
+.ricochet-done > a {
+  margin-top: 16px;
+}
+.ricochet-done > a {
+  font-size: 16px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -248,8 +262,8 @@
 .ricochet-levels > div {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 12px;
 }
 :is(.ricochet-levels, .ricochet-modes) button {
   display: inline-flex;
@@ -267,6 +281,26 @@
 }
 :is(.ricochet-levels, .ricochet-modes) button svg {
   color: var(--rc-beam);
+}
+.ricochet-levels button.is-solved {
+  position: relative;
+  border-color: var(--rc-beam);
+}
+.ricochet-solved-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rc-beam);
+  color: var(--rc-surface);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.ricochet-levels .ricochet-solved-badge svg {
+  color: inherit;
 }
 :is(.ricochet-levels, .ricochet-modes) button[aria-pressed='true'] {
   background: var(--ink);

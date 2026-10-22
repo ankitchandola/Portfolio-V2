@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Link2,
+  CalendarDays,
   Shuffle,
 } from 'lucide-react';
 import raw from '../content/levels.json';
@@ -47,7 +48,7 @@ const SOURCE_TIP = 0.2;
 const TARGET_RADIUS = 0.34;
 const PRESET_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 const MODES = [
-  ['campaign', 'Levels'],
+  ['campaign', 'Learn'],
   ['random', 'Random'],
   ['daily', 'Today'],
 ];
@@ -264,7 +265,7 @@ function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
   );
 }
 
-function Result({ shot, mode, solvedAll, onNext, onNew }) {
+function Result({ shot, mode, solvedAll, onNext, onNew, onRandom, onToday }) {
   if (!shot)
     return <p className="ricochet-result">Turn the mirrors, then fire.</p>;
   const { x, y } = shot.end;
@@ -284,16 +285,26 @@ function Result({ shot, mode, solvedAll, onNext, onNew }) {
     );
   else if (shot.outcome === 'hit')
     after = solvedAll ? (
-      <p className="ricochet-done">
-        All five levels solved.{' '}
+      <div className="ricochet-done">
+        <p>You’ve learned the rules. Now try a puzzle you haven’t seen.</p>
+        <div className="ricochet-done-actions">
+          <button type="button" className="solid-button" onClick={onRandom}>
+            Random puzzle
+            <Shuffle size={22} />
+          </button>
+          <button type="button" className="ricochet-button" onClick={onToday}>
+            <CalendarDays size={22} />
+            Today’s puzzle
+          </button>
+        </div>
         <a href="/#work">
           Back to the work
-          <ArrowUpRight size={20} />
+          <ArrowUpRight size={18} />
         </a>
-      </p>
+      </div>
     ) : (
       <button type="button" className="solid-button" onClick={onNext}>
-        Next level
+        Next lesson
         <ArrowRight size={22} />
       </button>
     );
@@ -311,7 +322,7 @@ function Result({ shot, mode, solvedAll, onNext, onNew }) {
 function Heading({ state, solvedToday, headingRef }) {
   const { mode, level, preset, seed } = state;
   const kicker = {
-    campaign: `LEVEL ${state.levelIndex + 1} OF ${levels.length}`,
+    campaign: `LESSON ${state.levelIndex + 1} OF ${levels.length}`,
     random: `RANDOM · ${PRESET_LABELS[preset]?.toUpperCase()} · SEED ${seed}`,
     daily: `PUZZLE OF THE DAY · ${seed && displayDate(seed)}`,
     shared: `SHARED PUZZLE${preset ? ` · ${PRESET_LABELS[preset].toUpperCase()}` : ''}`,
@@ -367,6 +378,7 @@ export default function Ricochet() {
   const heading = useRef(null),
     focusHeading = useRef(false);
   const { level, mode } = state;
+  const solvedCount = levels.filter((l) => state.solved.includes(l.id)).length;
 
   useEffect(() => {
     const storage = browserStorage();
@@ -464,7 +476,7 @@ export default function Ricochet() {
       </div>
       <noscript>
         <p className="ricochet-noscript">
-          The puzzle needs JavaScript. Level 1 is shown below as a preview.
+          The puzzle needs JavaScript. Lesson 1 is shown below as a preview.
         </p>
       </noscript>
       <div className="ricochet-layout">
@@ -540,28 +552,38 @@ export default function Ricochet() {
               solvedAll={allSolved(levels, state.solved)}
               onNext={() => open({ type: 'next' })}
               onNew={newPuzzle}
+              onRandom={() => chooseMode('random')}
+              onToday={() => chooseMode('daily')}
             />
           </div>
           {mode === 'campaign' && (
             <div className="ricochet-levels">
               <span className="kicker" aria-hidden="true">
-                LEVELS
+                LESSONS · {solvedCount} OF {levels.length} SOLVED
               </span>
-              <div role="group" aria-label="Choose a level">
+              <div role="group" aria-label="Choose a lesson">
                 {levels.map((l, i) => {
                   const solved = state.solved.includes(l.id);
                   return (
                     <button
                       key={l.id}
                       type="button"
+                      className={solved ? 'is-solved' : undefined}
                       aria-pressed={i === state.levelIndex}
-                      aria-label={`Level ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
+                      aria-label={`Lesson ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
                       onClick={() =>
                         open({ type: 'select', index: i, mode: 'campaign' })
                       }
                     >
                       {i + 1}
-                      {solved && <Check size={16} aria-hidden="true" />}
+                      {solved && (
+                        <span
+                          className="ricochet-solved-badge"
+                          aria-hidden="true"
+                        >
+                          <Check size={13} strokeWidth={3} />
+                        </span>
+                      )}
                     </button>
                   );
                 })}

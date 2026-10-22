@@ -141,7 +141,7 @@ A loop also gets a second, dashed path drawn over the cycle. Each Fire increment
 ```text
 mode        'campaign' | 'random' | 'daily' | 'shared'
 level       the level being played (a campaign level or a generated/shared one)
-levelIndex  the current or most recent campaign level, so Levels reopens it
+levelIndex  the current or most recent campaign level, so Learn reopens it
 preset      'easy' | 'medium' | 'hard' for generated puzzles, otherwise null
 seed        the random seed, or the UTC date for the daily puzzle
 mirrors     current mirror states
@@ -150,16 +150,16 @@ shot        the last trace result, or null
 solved      ids of solved campaign levels
 ```
 
-| Action                             | Effect                                                                                                                                                                      |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rotate {key}`                     | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored. |
-| `fire`                             | `shot = trace(...)`. In campaign mode a hit adds the level id to `solved`; generated and shared hits never do. Firing never adds to `history`.                              |
-| `undo`                             | Pops `history` and clears `shot`. Does nothing when `history` is empty.                                                                                                     |
-| `reset`                            | Restores the current level's starting mirrors (the campaign level, or the generated puzzle) and clears `history` and `shot`. `solved` is kept.                              |
-| `select {index}`                   | Opens that campaign level from its starting layout and returns to campaign mode.                                                                                            |
-| `next`                             | Campaign only: opens the next unsolved level, wrapping round. When every level is solved, or outside the campaign, it does nothing; the page offers New puzzle instead.     |
-| `load {level, mode, preset, seed}` | Opens a generated or shared level with a clean `history` and `shot`. The page builds the level, so the reducer stays pure.                                                  |
-| `loaded {ids}`                     | Merges ids loaded from storage into `solved`.                                                                                                                               |
+| Action                             | Effect                                                                                                                                                                                                                                          |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rotate {key}`                     | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored.                                                                     |
+| `fire`                             | `shot = trace(...)`. In campaign mode a hit adds the level id to `solved`; generated and shared hits never do. Firing never adds to `history`.                                                                                                  |
+| `undo`                             | Pops `history` and clears `shot`. Does nothing when `history` is empty.                                                                                                                                                                         |
+| `reset`                            | Restores the current level's starting mirrors (the campaign level, or the generated puzzle) and clears `history` and `shot`. `solved` is kept.                                                                                                  |
+| `select {index}`                   | Opens that campaign level from its starting layout and returns to campaign mode.                                                                                                                                                                |
+| `next`                             | Campaign only: opens the next unsolved level, wrapping round. When every level is solved, or outside the campaign, it does nothing. The page then offers Random and Today's puzzle after the last lesson, or New puzzle in the generated modes. |
+| `load {level, mode, preset, seed}` | Opens a generated or shared level with a clean `history` and `shot`. The page builds the level, so the reducer stays pure.                                                                                                                      |
+| `loaded {ids}`                     | Merges ids loaded from storage into `solved`.                                                                                                                                                                                                   |
 
 Three helpers decide what the page shows:
 
@@ -186,7 +186,7 @@ Nothing saves "whenever state changes", so the empty first render can never over
 
 `ricochet-prefs` holds `{v: 1, mode, preset, dailySolved}`:
 
-- **`mode`** is the last of Levels, Random or Today. `/play` reopens in it, and Random reopens at the saved `preset` with a fresh puzzle.
+- **`mode`** is the last of Learn, Random or Today. `/play` reopens in it, and Random reopens at the saved `preset` with a fresh puzzle.
 - **`dailySolved`** is the UTC date of the last solved puzzle of the day. When it matches today, the page shows "Solved today".
 
 `loadPrefs` drops an unknown version entirely and drops invalid fields one by one. `savePrefs` merges with what is stored. Saves happen in handlers: changing mode, changing difficulty, and a daily hit. The puzzle in progress is deliberately not saved. A `?l=`, `?seed=` or `?mode=today` URL always wins over saved preferences.
@@ -257,7 +257,7 @@ Hard uses `loopTrap: 'prefer'`. Its first 40 attempts must include a layout that
 
 | Mode   | URL           |
 | ------ | ------------- |
-| Levels | `/play/`      |
+| Learn  | `/play/`      |
 | Random | `?seed=…&d=…` |
 | Today  | `?mode=today` |
 | Shared | `?l=…`        |

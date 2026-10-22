@@ -122,7 +122,9 @@ Levels live in `src/content/levels.json` as row strings. Keep them at most 6 col
 
 The board is SVG with a real button over each mirror, named by row, column and slant, and one over the source arrow that fires like the Fire button. Hovering these buttons shows an inset outline, never a fill, because the buttons sit above the drawing and a fill would hide it. The beam starts at the arrow's tip and stops at the target's outer ring. Each shot's outcome is announced in a status region with an icon and text. Reset is enabled whenever a beam is shown or a mirror has moved. There are no single-key shortcuts. Progress is stored under `ricochet-solved`, loaded after hydration and saved only when a shot newly hits. Board colours are the `--rc-*` tokens in `src/play/play.css` and are checked at 3:1 in `tests/check-site.py`; loop dashes use the board surface colour over the beam. The beam draws in at most 600ms and mirrors turn in 120ms, both instant under reduced motion.
 
-A Levels / Random / Today switch sits above the board. It uses the same pressed-button style as the level picker.
+A Learn / Random / Today switch sits above the board. It uses the same pressed-button style as the lesson picker.
+
+- **Learn** is the five handcrafted levels, presented as lessons (`LESSON 3 OF 5`). Each teaches one idea in order: turning a mirror, chaining reflections, loops, walls, decoys. Random puzzles cannot guarantee that order; Easy puzzles never loop, and few Medium ones can. Finishing all five offers Random and Today's puzzle as the main actions, with Back to the work as a quieter link. First-time visitors start on lesson 1. Solved lessons show a check badge on the button's corner and a teal border, and the label counts progress (`LESSONS · 2 OF 5 SOLVED`). Each button's accessible name also says "solved", so completion never depends on colour alone.
 
 - **Random** offers Easy, Medium and Hard, plus New puzzle.
 - **Today** is one Medium puzzle for everyone, dated in UTC.
