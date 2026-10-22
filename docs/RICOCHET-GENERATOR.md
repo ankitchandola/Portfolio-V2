@@ -16,7 +16,7 @@ This adds generated levels to `/play`. Visitors pick a difficulty and get a fres
 
 **Non-goals for this version**
 
-- Proving a level is *fun*. Heuristics make dull levels less likely, but the handcrafted levels remain the showcase.
+- Proving a level is _fun_. Heuristics make dull levels less likely, but the handcrafted levels remain the showcase.
 - New cell types (fixed mirrors, portals and so on). The generator uses today's rules only.
 - Leaderboards, streaks, accounts or analytics.
 - Restoring a puzzle in progress after a reload. Only the daily-solved date and the last mode and difficulty are saved (see Saving).
@@ -26,16 +26,16 @@ This adds generated levels to `/play`. Visitors pick a difficulty and get a fres
 
 The prototype ran 5,000 attempts per preset with seed 42, using the existing `model.js` and solver unchanged.
 
-| Preset | Grid | Turns | Decoys | Walls | Rotations | Accepted | Time per accepted level |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Easy | 6 × 5 | 2 | 1 | 3 | exactly 2 | 97% | < 0.1 ms |
-| Medium | 6 × 6 | 4 | 2 | 4 | exactly 3 | 84% | ≈ 0.1 ms |
-| Hard | 6 × 8 | 5 | 3 | 5 | ≥ 4 | 72% | ≈ 0.4 ms |
+| Preset | Grid  | Turns | Decoys | Walls | Rotations | Accepted | Time per accepted level |
+| ------ | ----- | ----- | ------ | ----- | --------- | -------- | ----------------------- |
+| Easy   | 6 × 5 | 2     | 1      | 3     | exactly 2 | 97%      | < 0.1 ms                |
+| Medium | 6 × 6 | 4     | 2      | 4     | exactly 3 | 84%      | ≈ 0.1 ms                |
+| Hard   | 6 × 8 | 5     | 3      | 5     | ≥ 4       | 72%      | ≈ 0.4 ms                |
 
 What the prototype taught:
 
 - **Scattering cells at random does not work well.** Only 0.03% of levels passed, at about 0.5 s per good level. Building the solution first is the approach to use.
-- **Unreachable decoys make solution counts meaningless.** A mirror the beam never touches can face either way, which doubles the number of solving layouts. Uniqueness has to be measured as distinct *beam routes*, not distinct layouts.
+- **Unreachable decoys make solution counts meaningless.** A mirror the beam never touches can face either way, which doubles the number of solving layouts. Uniqueness has to be measured as distinct _beam routes_, not distinct layouts.
 - **Valid is not the same as good.** The Hard sample left three rows empty. Coverage heuristics are needed (see Quality).
 
 ## Algorithm
@@ -48,7 +48,7 @@ What the prototype taught:
    - At each corner, place a mirror facing the way that makes the turn. This is the solved orientation.
    - After `turns` corners, end the route on the target.
    - If the walk gets stuck, start the attempt again.
-2. **Place decoys where wrong turns lead.** Pick a route mirror and look along its *other* exit direction. Place a decoy, facing a random way, 1–3 cells along that line. Decoys therefore catch the beam when a player turns a mirror the wrong way.
+2. **Place decoys where wrong turns lead.** Pick a route mirror and look along its _other_ exit direction. Place a decoy, facing a random way, 1–3 cells along that line. Decoys therefore catch the beam when a player turns a mirror the wrong way.
 3. **Add walls** on empty cells that are not on the route.
 4. **Hide the answer.** Flip exactly `scramble` of the route mirrors.
 5. **Check the result** using the solver:
@@ -89,11 +89,11 @@ An impossible configuration throws an error. It does not return `null`.
 
 ### Presets
 
-| Preset | Constraints |
-| --- | --- |
-| Easy | `{w:6, h:5, turns:2, decoys:1, walls:3, scramble:2, rotations:{min:2, max:2}}` |
-| Medium | `{w:6, h:6, turns:4, decoys:2, walls:4, scramble:3, rotations:{min:3, max:3}}` |
-| Hard | `{w:6, h:8, turns:5, decoys:3, walls:5, scramble:5, rotations:{min:4, max:8}, loopTrap:true}` |
+| Preset | Constraints                                                                                   |
+| ------ | --------------------------------------------------------------------------------------------- |
+| Easy   | `{w:6, h:5, turns:2, decoys:1, walls:3, scramble:2, rotations:{min:2, max:2}}`                |
+| Medium | `{w:6, h:6, turns:4, decoys:2, walls:4, scramble:3, rotations:{min:3, max:3}}`                |
+| Hard   | `{w:6, h:8, turns:5, decoys:3, walls:5, scramble:5, rotations:{min:4, max:8}, loopTrap:true}` |
 
 The `loopTrap` acceptance rate has not been measured yet. If Hard drops below 20% acceptance with it on, make it a preference instead of a requirement: try with it, and fall back without it.
 
@@ -123,11 +123,12 @@ A share link carries the **level itself**, not its seed. A link stays valid even
 
 - **Format:** `/play?l=<rows>&d=<preset>`. Rows are joined with `-`, and each cell becomes a URL-safe letter:
 
-  | Cell | `.` | `#` | `T` | `/` | `\` | `>` | `<` | `^` | `v` |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | Cell   | `.` | `#` | `T` | `/` | `\` | `>` | `<` | `^` | `v` |
+  | ------ | --- | --- | --- | --- | --- | --- | --- | --- | --- |
   | Letter | `.` | `x` | `t` | `f` | `b` | `e` | `w` | `n` | `s` |
 
   A 6 × 8 level becomes 55 characters.
+
 - **Decoding** goes through `parseLevel`, then the mirror cap, then the solver, which must find a solution. Anything invalid or unsolvable shows the message "That puzzle link isn't valid." and opens level 1. A visitor's link never throws.
 - **Sharing:** "Copy link" uses `navigator.clipboard.writeText`. Where that is unavailable or refused, show the link in a read-only, pre-selected text field.
 - **Scope:** the link holds the puzzle's starting layout, not the player's progress.
@@ -141,13 +142,24 @@ A share link carries the **level itself**, not its seed. A link stays valid even
 - **Reducer:** today the state holds `levelIndex` into a fixed array. Change it to hold the level itself:
 
   ```js
-  {mode: 'campaign' | 'random' | 'daily' | 'shared', level, levelIndex, preset, seed, mirrors, history, shot, solved}
+  {
+    mode: ('campaign' | 'random' | 'daily' | 'shared',
+      level,
+      levelIndex,
+      preset,
+      seed,
+      mirrors,
+      history,
+      shot,
+      solved);
+  }
   ```
 
   - A new action, `load {level, mode, preset?, seed?}`, opens any level in its starting layout.
   - `select` and `next` keep their current behaviour in campaign mode.
   - In random mode, `next` means "new puzzle at the same difficulty". The page generates the level and dispatches `load`, so the reducer stays pure.
   - `fire` adds to `solved` only for campaign levels.
+
 - **Progress:** generated puzzles do not touch the `ricochet-solved` key. What else is saved is described in Saving.
 
 ## Saving
@@ -166,8 +178,9 @@ Two small conveniences are stored in the browser. Neither is needed to play.
   - `mode` must be one of the known modes;
   - `preset` must be one of the known presets;
   - `dailySolved` must be a `YYYY-MM-DD` string.
-  
+
   Invalid fields are dropped individually. Missing data, malformed data or storage that throws gives defaults.
+
 - **Load after hydration.** Read the key in the same mount effect that loads campaign progress, so the first render still matches the prerendered HTML.
 - **Save from handlers.** Save when the mode changes, when the difficulty changes, and on a daily hit. Never save from a general "on state change" effect. `savePrefs` merges with what is stored, so a partial save never erases other fields.
 - **The URL wins.** If the URL has `?l=`, `?seed=` or `?mode=today`, it decides what opens. Saved preferences apply only when the URL has none of these.
@@ -241,11 +254,11 @@ Verification for each UI step:
 
 ## Decisions
 
-| Question | Decision |
-| --- | --- |
-| Include puzzle of the day in this version? | Yes. It is one preset plus a date seed, almost free once seeds exist. |
-| Share by seed or by level? | By level (`?l=`), so links survive generator changes. Seeds are still shown, for reference. |
-| Should generated solves count toward progress? | No. Only the campaign records progress. |
-| Hard requires a loop trap? | Yes if acceptance stays at 20% or above; otherwise it is a preference. |
-| Time zone for the daily puzzle | UTC, so everyone sees the same puzzle. The date is shown so the rollover is not a surprise. |
-| What to save | Decided: the daily-solved date and the last mode and difficulty. The puzzle in progress is not saved. |
+| Question                                       | Decision                                                                                              |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Include puzzle of the day in this version?     | Yes. It is one preset plus a date seed, almost free once seeds exist.                                 |
+| Share by seed or by level?                     | By level (`?l=`), so links survive generator changes. Seeds are still shown, for reference.           |
+| Should generated solves count toward progress? | No. Only the campaign records progress.                                                               |
+| Hard requires a loop trap?                     | Yes if acceptance stays at 20% or above; otherwise it is a preference.                                |
+| Time zone for the daily puzzle                 | UTC, so everyone sees the same puzzle. The date is shown so the rollover is not a surprise.           |
+| What to save                                   | Decided: the daily-solved date and the last mode and difficulty. The puzzle in progress is not saved. |

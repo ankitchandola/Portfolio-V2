@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .build && node scripts/prerender.mjs",
     "dev": "vite --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs"
@@ -15,6 +17,7 @@
     "react-router": "^7.0.0"
   },
   "devDependencies": {
+    "prettier": "^3.8.3",
     "vite": "^7.0.0"
   }
 }

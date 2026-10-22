@@ -1,3 +1,38 @@
 import React from 'react';
-import {scope} from '../content/profile';
-export default function CurrentWork(){return <section className="current-work wrap" id="today"><p className="eyebrow">TODAY / FULL-STACK DEVELOPMENT</p><div className="current-grid"><div><h2>From the first click<br/><span>to the systems behind it.</span></h2><p>My current work connects a sales CRM, an operations platform, a shared React package and a public brand website with its CMS. I work across interfaces, backend services and staging deployment.</p><span className="current-role">Full-stack developer · 2025 — present</span></div><div className="scope-numbers" aria-label="Current project scope">{scope.map(([n,label,detail])=><div key={n}><strong>{n}</strong><span><span className="scope-name">{label}</span><br/><span className="scope-detail">{detail}</span></span></div>)}</div></div></section>}
+import { scope } from '../content/profile';
+export default function CurrentWork() {
+  return (
+    <section className="current-work wrap" id="today">
+      <p className="eyebrow">TODAY / FULL-STACK DEVELOPMENT</p>
+      <div className="current-grid">
+        <div>
+          <h2>
+            From the first click
+            <br />
+            <span>to the systems behind it.</span>
+          </h2>
+          <p>
+            My current work connects a sales CRM, an operations platform, a
+            shared React package and a public brand website with its CMS. I work
+            across interfaces, backend services and staging deployment.
+          </p>
+          <span className="current-role">
+            Full-stack developer · 2025 — present
+          </span>
+        </div>
+        <div className="scope-numbers" aria-label="Current project scope">
+          {scope.map(([n, label, detail]) => (
+            <div key={n}>
+              <strong>{n}</strong>
+              <span>
+                <span className="scope-name">{label}</span>
+                <br />
+                <span className="scope-detail">{detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

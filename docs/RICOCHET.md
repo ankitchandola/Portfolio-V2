@@ -4,15 +4,15 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 
 ## Files
 
-| File | Responsibility |
-| --- | --- |
-| `src/play/model.js` | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
-| `src/play/progress.js` | Saving and loading solved level ids in `localStorage` |
-| `src/play/Ricochet.jsx` | The page: draws the board, wires the buttons to the reducer, saves progress |
-| `src/play/play.css` | Board and control styles, using the `--rc-*` colour tokens |
-| `src/content/levels.json` | The five levels |
-| `src/play/solve.js` | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability |
-| `tests/play.test.mjs` | Tests for the rules, reducer, progress storage and every shipped level |
+| File                      | Responsibility                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `src/play/model.js`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
+| `src/play/progress.js`    | Saving and loading solved level ids in `localStorage`                                                          |
+| `src/play/Ricochet.jsx`   | The page: draws the board, wires the buttons to the reducer, saves progress                                    |
+| `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
+| `src/content/levels.json` | The five levels                                                                                                |
+| `src/play/solve.js`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
+| `tests/play.test.mjs`     | Tests for the rules, reducer, progress storage and every shipped level                                         |
 
 `model.js` is the only file that knows the rules. The page and the tests both go through it.
 
@@ -20,14 +20,14 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 
 A level is a grid of cells, `w` columns by `h` rows. `x` counts columns from the left and `y` counts rows from the top, so `y` grows downwards. Each cell is one character:
 
-| Char | Cell | What happens when the beam enters it |
-| --- | --- | --- |
-| `.` | empty | It carries on in the same direction |
-| `#` | wall | The shot ends: **blocked** |
-| `T` | target | The shot ends: **hit** |
+| Char      | Cell                                        | What happens when the beam enters it                                         |
+| --------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| `.`       | empty                                       | It carries on in the same direction                                          |
+| `#`       | wall                                        | The shot ends: **blocked**                                                   |
+| `T`       | target                                      | The shot ends: **hit**                                                       |
 | `> < ^ v` | source, pointing east, west, north or south | It carries on in the same direction (the beam passes through its own source) |
-| `/` | mirror | It turns: E→N, N→E, W→S, S→W |
-| `\` | mirror | It turns: E→S, S→E, W→N, N→W |
+| `/`       | mirror                                      | It turns: E→N, N→E, W→S, S→W                                                 |
+| `\`       | mirror                                      | It turns: E→S, S→E, W→N, N→W                                                 |
 
 A beam that leaves the grid has **escaped**. The grid does not need a border of walls.
 
@@ -85,12 +85,12 @@ The beam's state is `(x, y, dir)`: the cell it is entering and the direction it 
 }
 ```
 
-| Outcome | Last entry in `path` | `end` |
-| --- | --- | --- |
-| hit | the target cell | the target cell |
-| blocked | the wall cell | the wall cell |
-| escaped | the last cell inside the grid | the first coordinate outside it |
-| loop | the cell just before the repeat | the repeated state, the same as `path[loopStart]` |
+| Outcome | Last entry in `path`            | `end`                                             |
+| ------- | ------------------------------- | ------------------------------------------------- |
+| hit     | the target cell                 | the target cell                                   |
+| blocked | the wall cell                   | the wall cell                                     |
+| escaped | the last cell inside the grid   | the first coordinate outside it                   |
+| loop    | the cell just before the repeat | the repeated state, the same as `path[loopStart]` |
 
 ### It always finishes
 
@@ -136,21 +136,23 @@ A loop also gets a second, dashed path drawn over the cycle. Each Fire increment
 `createReducer(levels)` returns a pure reducer. The state is:
 
 ```js
-{levelIndex, mirrors, history, shot, solved}
+{
+  (levelIndex, mirrors, history, shot, solved);
+}
 // history: earlier mirror maps, for Undo
 // shot:    the last trace result, or null
 // solved:  ids of solved levels
 ```
 
-| Action | Effect |
-| --- | --- |
-| `rotate {key}` | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored. |
-| `fire` | `shot = trace(...)`. A hit adds the level id to `solved`. Firing never adds to `history`. |
-| `undo` | Pops `history` and clears `shot`. Does nothing when `history` is empty. |
-| `reset` | Restores the level's starting mirrors and clears `history` and `shot`. `solved` is kept. |
-| `select {index}` | Opens that level from its starting layout. |
-| `next` | Opens the next unsolved level after the current one, wrapping round. When every level is solved it does nothing, and the page shows the "All five levels solved" message instead. |
-| `loaded {ids}` | Merges ids loaded from storage into `solved`. |
+| Action           | Effect                                                                                                                                                                            |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rotate {key}`   | Pushes the current `mirrors` onto `history`, toggles the mirror and clears `shot`, because a mirror moved and the old beam is no longer accurate. Unknown keys are ignored.       |
+| `fire`           | `shot = trace(...)`. A hit adds the level id to `solved`. Firing never adds to `history`.                                                                                         |
+| `undo`           | Pops `history` and clears `shot`. Does nothing when `history` is empty.                                                                                                           |
+| `reset`          | Restores the level's starting mirrors and clears `history` and `shot`. `solved` is kept.                                                                                          |
+| `select {index}` | Opens that level from its starting layout.                                                                                                                                        |
+| `next`           | Opens the next unsolved level after the current one, wrapping round. When every level is solved it does nothing, and the page shows the "All five levels solved" message instead. |
+| `loaded {ids}`   | Merges ids loaded from storage into `solved`.                                                                                                                                     |
 
 Three helpers decide what the page shows:
 
@@ -209,13 +211,13 @@ Level 3 must also be able to loop. The current minimums are 1, 2, 2, 3 and 4.
 
 Different kinds of change touch different parts of the model:
 
-| Change | What it touches |
-| --- | --- |
-| Fixed (non-rotatable) mirrors | A new character in `parseLevel`, kept out of `mirrors` but reflected by `trace`. The reducer, the solver and reversibility are unchanged. |
-| Par and move counter | The reducer counts rotations. The par could come from running `solve` in the browser: at most 256 traces is cheap. |
-| Hint | Move `solve` into `src/play/`, then compare the current layout with the nearest solution and point at one mirror. |
-| Paired portals | A new cell type in `trace`. Paired portals keep reversibility, so `loopStart` stays `0`. |
-| One-way gates | Break reversibility, so `loopStart` can be above `0` and the loop overlay starts part-way along the path. The pass-through source stops being the only way to get a loop. |
-| Multiple targets | Targets must let the beam pass through and record a hit instead of ending the shot, and "hit" becomes "every target lit". |
-| Beam splitters | The path becomes a tree. Trace each branch with one shared `visited` set, and `shot` carries several paths. |
-| Movable mirrors | Mirror positions become state. The solver's search space grows from `2ⁿ` to placements × orientations, so it needs a breadth-first search with a cap. |
+| Change                        | What it touches                                                                                                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fixed (non-rotatable) mirrors | A new character in `parseLevel`, kept out of `mirrors` but reflected by `trace`. The reducer, the solver and reversibility are unchanged.                                 |
+| Par and move counter          | The reducer counts rotations. The par could come from running `solve` in the browser: at most 256 traces is cheap.                                                        |
+| Hint                          | Move `solve` into `src/play/`, then compare the current layout with the nearest solution and point at one mirror.                                                         |
+| Paired portals                | A new cell type in `trace`. Paired portals keep reversibility, so `loopStart` stays `0`.                                                                                  |
+| One-way gates                 | Break reversibility, so `loopStart` can be above `0` and the loop overlay starts part-way along the path. The pass-through source stops being the only way to get a loop. |
+| Multiple targets              | Targets must let the beam pass through and record a hit instead of ending the shot, and "hit" becomes "every target lit".                                                 |
+| Beam splitters                | The path becomes a tree. Trace each branch with one shared `visited` set, and `shot` carries several paths.                                                               |
+| Movable mirrors               | Mirror positions become state. The solver's search space grows from `2ⁿ` to placements × orientations, so it needs a breadth-first search with a cap.                     |

@@ -1,2 +1,48 @@
 import React from 'react';
-export default function HowIWork(){return <section className="about-section" id="about"><div className="wrap about-grid"><div><p className="eyebrow">02 / HOW I WORK</p><h2>The useful part<br/>is in the <span>details.</span></h2></div><div className="about-copy"><p>I’m Ankit, a full-stack developer based in Delhi. I follow features through the interface, validation, APIs and the workflows connecting them.</p><p>I like the questions that show up after the happy path. Answering them is where a product starts feeling dependable.</p><div className="capabilities"><div><span>01</span><b>Make it understandable</b><p>React, Next.js, TypeScript<br/>Forms, state and reusable UI</p></div><div><span>02</span><b>Make it hold together</b><p>Node.js, PostgreSQL, Fastify<br/>APIs, permissions and testing</p></div></div></div></div></section>}
+export default function HowIWork() {
+  return (
+    <section className="about-section" id="about">
+      <div className="wrap about-grid">
+        <div>
+          <p className="eyebrow">02 / HOW I WORK</p>
+          <h2>
+            The useful part
+            <br />
+            is in the <span>details.</span>
+          </h2>
+        </div>
+        <div className="about-copy">
+          <p>
+            I’m Ankit, a full-stack developer based in Delhi. I follow features
+            through the interface, validation, APIs and the workflows connecting
+            them.
+          </p>
+          <p>
+            I like the questions that show up after the happy path. Answering
+            them is where a product starts feeling dependable.
+          </p>
+          <div className="capabilities">
+            <div>
+              <span>01</span>
+              <b>Make it understandable</b>
+              <p>
+                React, Next.js, TypeScript
+                <br />
+                Forms, state and reusable UI
+              </p>
+            </div>
+            <div>
+              <span>02</span>
+              <b>Make it hold together</b>
+              <p>
+                Node.js, PostgreSQL, Fastify
+                <br />
+                APIs, permissions and testing
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

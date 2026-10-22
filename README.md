@@ -28,5 +28,9 @@ Pushes to `main` deploy to GitHub Pages at https://ankitchandola.github.io/ thro
 
 ## Validation
 
+Run `npm run format` to format maintained source and documentation, or
+`npm run format:check` to verify formatting without changing files. Generated
+output, dependencies, local tool artifacts and third-party assets are excluded.
+
 Run `npm run build`, `node --test tests/*.test.mjs`, and `python tests/check-site.py`.
 The checks cover the comparison model, the puzzle model and levels, prerendered links and assets, headings, duplicate IDs, script-free lite output and principal palette contrast. They do not replace a rendered visual review in a browser.

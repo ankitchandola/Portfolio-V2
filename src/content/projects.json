@@ -4,12 +4,7 @@
     "name": "Recon Desk",
     "kind": "Personal project",
     "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
-    "tags": [
-      "React",
-      "TypeScript",
-      "Web Workers",
-      "IndexedDB"
-    ],
+    "tags": ["React", "TypeScript", "Web Workers", "IndexedDB"],
     "ownership": "I built the application end to end.",
     "sections": [
       [
@@ -128,10 +123,7 @@
       ]
     ],
     "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool.",
-    "context": [
-      "Personal project",
-      "Designed and built alone"
-    ],
+    "context": ["Personal project", "Designed and built alone"],
     "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats."
   },
   {
@@ -221,27 +213,11 @@
       "lanes": [
         {
           "steps": [
-            [
-              "Surveyor edits a unit",
-              "Works without a connection"
-            ],
-            [
-              "IndexedDB queue",
-              "Survives reloads",
-              "Saved on device"
-            ],
-            [
-              "Per-unit sequencer",
-              "Keeps each unit's saves in order"
-            ],
-            [
-              "Sync limiter",
-              "At most three in flight"
-            ],
-            [
-              "Bulk save API",
-              "Fastify, one request per batch"
-            ],
+            ["Surveyor edits a unit", "Works without a connection"],
+            ["IndexedDB queue", "Survives reloads", "Saved on device"],
+            ["Per-unit sequencer", "Keeps each unit's saves in order"],
+            ["Sync limiter", "At most three in flight"],
+            ["Bulk save API", "Fastify, one request per batch"],
             [
               "PostgreSQL",
               "Rejected saves roll back and refetch",
@@ -257,10 +233,7 @@
       ]
     },
     "result": "Surveyors keep recording measurements, photos and installation progress without a connection, and queued work syncs in order on reconnect. Reconnect traffic is bounded, offline preparation uses batched reads instead of per-unit requests, and invalid scans are rejected on the device before a batch is sent. No before-and-after measurement of timeouts or lost saves has been taken yet.",
-    "context": [
-      "One of 4 developers",
-      "4 months, ongoing"
-    ],
+    "context": ["One of 4 developers", "4 months, ongoing"],
     "facts": [
       [
         "About 1,000",
@@ -279,12 +252,7 @@
     "name": "Sales CRM & Browser Telephony",
     "kind": "Professional work",
     "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
-    "tags": [
-      "Vue 3",
-      "Python / Frappe",
-      "MariaDB / Redis",
-      "Exotel"
-    ],
+    "tags": ["Vue 3", "Python / Frappe", "MariaDB / Redis", "Exotel"],
     "ownership": "I owned the majority of company-specific frontend and Python backend development. The original Frappe CRM platform and initial installation predated my involvement.",
     "images": [
       [
@@ -357,40 +325,18 @@
       "lanes": [
         {
           "steps": [
-            [
-              "Enquiry",
-              "Website form or incoming call"
-            ],
-            [
-              "Browser call",
-              "Exotel softphone, outcome confirmed by webhook"
-            ],
-            [
-              "Lead",
-              "Qualified and moved through enforced stages"
-            ],
-            [
-              "Quotation",
-              "Requested, uploaded, reviewed and revised"
-            ],
-            [
-              "Accepted",
-              "Final quote fields lock on the lead"
-            ],
-            [
-              "Handoff",
-              "Creates the operations project and draft order",
-              "Won"
-            ]
+            ["Enquiry", "Website form or incoming call"],
+            ["Browser call", "Exotel softphone, outcome confirmed by webhook"],
+            ["Lead", "Qualified and moved through enforced stages"],
+            ["Quotation", "Requested, uploaded, reviewed and revised"],
+            ["Accepted", "Final quote fields lock on the lead"],
+            ["Handoff", "Creates the operations project and draft order", "Won"]
           ]
         }
       ]
     },
     "result": "Enquiries, calls, quotations and the operations handoff live in linked records with enforced stage rules. A confirmed lead creates its operations project and draft order from the CRM, and a failed handoff stays retryable instead of looking complete.",
-    "context": [
-      "One of 2 developers",
-      "3 months of build, now in maintenance"
-    ],
+    "context": ["One of 2 developers", "3 months of build, now in maintenance"],
     "facts": [
       [
         "10,000+",
@@ -529,12 +475,7 @@
     "name": "Public Brand Website & CMS",
     "kind": "Professional work",
     "summary": "A public-facing SSR website, structured enquiry flows and a Strapi publishing platform, with staging deployment on AWS EC2.",
-    "tags": [
-      "React Router SSR",
-      "Strapi",
-      "Frappe CRM",
-      "AWS EC2"
-    ],
+    "tags": ["React Router SSR", "Strapi", "Frappe CRM", "AWS EC2"],
     "ownership": "I implemented the website and CMS together and set up their shared staging environment.",
     "sections": [
       [
@@ -610,39 +551,21 @@
         {
           "title": "Enquiry",
           "steps": [
-            [
-              "Visitor submits a form",
-              "Campaign context travels with it"
-            ],
+            ["Visitor submits a form", "Campaign context travels with it"],
             [
               "Server action",
               "Validates with Zod; CRM credentials stay on the server"
             ],
-            [
-              "Frappe CRM",
-              "Creates, matches or reactivates the lead"
-            ],
-            [
-              "Outcome page",
-              "Thank-you or closed-match follow-up"
-            ]
+            ["Frappe CRM", "Creates, matches or reactivates the lead"],
+            ["Outcome page", "Thank-you or closed-match follow-up"]
           ]
         },
         {
           "title": "Content",
           "steps": [
-            [
-              "Editor publishes in Strapi",
-              "Article blocks, SEO fields"
-            ],
-            [
-              "Media in S3",
-              "Accessed through an instance role"
-            ],
-            [
-              "SSR page",
-              "Each block rendered by its own component"
-            ]
+            ["Editor publishes in Strapi", "Article blocks, SEO fields"],
+            ["Media in S3", "Accessed through an instance role"],
+            ["SSR page", "Each block rendered by its own component"]
           ]
         }
       ]

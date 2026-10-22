@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.build/
+.sites-runtime/
+.claude/
+.copilot/
+.taste-skill/
+public/assets/fonts/
+public/assets/projects/
+public/assets/docs/
+public/assets/*LICENSE*

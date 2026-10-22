@@ -10,16 +10,16 @@ Use teal, apricot and olive as a coordinated palette. Do not introduce violet or
 
 ## Colour roles
 
-| Role | Light | Dark |
-| --- | --- | --- |
-| Page | `#F5F2E9` | `#101E20` |
-| Raised surface | `#FFFDF7` | `#182A2D` |
-| Main text | `#172F31` | `#F1F2E9` |
-| Secondary text | `#4B6260` | `#B7C8C2` |
-| Teal accent | `#245E58` | `#9AD9C7` |
-| Mint surface | `#C6DFD4` | `#294A43` |
-| Apricot accent | `#F4C7A4` | `#EFB98E` |
-| Divider | `#BDC8BE` | `#4C6761` |
+| Role            | Light     | Dark      |
+| --------------- | --------- | --------- |
+| Page            | `#F5F2E9` | `#101E20` |
+| Raised surface  | `#FFFDF7` | `#182A2D` |
+| Main text       | `#172F31` | `#F1F2E9` |
+| Secondary text  | `#4B6260` | `#B7C8C2` |
+| Teal accent     | `#245E58` | `#9AD9C7` |
+| Mint surface    | `#C6DFD4` | `#294A43` |
+| Apricot accent  | `#F4C7A4` | `#EFB98E` |
+| Divider         | `#BDC8BE` | `#4C6761` |
 | Contact section | `#245E58` | `#20473F` |
 
 Use semantic CSS variables instead of new isolated hex values where a role already exists. The homepage calls the main accent `--teal`; detail/lite styles also use `--accent`. Read the final cascade before editing: earlier styles contain superseded colours.
@@ -33,12 +33,12 @@ Use semantic CSS variables instead of new isolated hex values where a role alrea
 
 ## Typography
 
-| Purpose | Typeface | Local assets |
-| --- | --- | --- |
-| Display headings and large numbers | URW Gothic | `display.woff` |
-| Paragraphs and descriptions | Nimbus Sans | `body.woff`, `body-bold.woff` |
+| Purpose                             | Typeface           | Local assets                    |
+| ----------------------------------- | ------------------ | ------------------------------- |
+| Display headings and large numbers  | URW Gothic         | `display.woff`                  |
+| Paragraphs and descriptions         | Nimbus Sans        | `body.woff`, `body-bold.woff`   |
 | Section labels and compact headings | Nimbus Sans Narrow | `label.woff`, `label-bold.woff` |
-| Actual code/data, when useful | Nimbus Mono PS | `mono.woff` |
+| Actual code/data, when useful       | Nimbus Mono PS     | `mono.woff`                     |
 
 Keep the font licence in `public/assets/fonts/LICENSE.txt`. Use the final `--display`, `--body` and `--label` variables rather than assuming the initial font aliases are identical on every page.
 
