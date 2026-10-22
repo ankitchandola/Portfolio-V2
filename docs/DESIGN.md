@@ -52,7 +52,7 @@ Use the existing centred container, approximately 1320px maximum width, with res
 
 Give each section a clear label, headline and supporting description. Emphasised headline words use the same accent treatment as neighbouring sections. Borders and colour blocks should establish structure without making every item a floating card.
 
-The header separator and final footer background extend to the viewport edges; their contents remain aligned with the page container. Use the `ac` monogram without a decorative star. Keep the Lite version link quiet. About me links to the main page's How I Work section (`#about`). Place a map-pin icon inline with the Delhi location.
+The header separator and final footer background extend to the viewport edges; their contents remain aligned with the page container. Use the `ac` monogram without a decorative star. The homepage, detail and lite headers share one wordmark (monogram, name, FULL-STACK DEVELOPER) and the same nav labels: About me, Work, Experience, Say hello, which jumps to that page's contact section. Keep the Lite version link quiet. About me links to the main page's How I Work section (`#about`). Place a map-pin icon inline with the Delhi location.
 
 ### Main and lite editions
 
@@ -82,7 +82,7 @@ Detail pages follow one order: heading and tags, screenshot gallery, The problem
 
 Prefer actual sanitised screenshots with clear captions. If an illustration is necessary, depict the project's real purpose and flow; avoid decorative generic dashboards. Never invent metrics or plausible business records and present them as evidence.
 
-Gallery controls must clearly invite interaction, show the selected view, expose accessible names and preserve keyboard operation. Keep useful screenshot context visible. Full-size images may open separately with an explicit link and safe external-link attributes. Do not recolour screenshots to match the portfolio.
+Gallery controls must clearly invite interaction, show the selected view, expose accessible names and preserve keyboard operation. Keep useful screenshot context visible. Previews are fixed 16:10 frames with no nested scrolling; a screenshot whose key area is small gets a `left top width` focus (percent of the image) in `projects.json`, and the caption's Open full screenshot link shows the whole image. Leave the focus out when the important parts sit far apart. Full-size images may open separately with an explicit link and safe external-link attributes. Do not recolour screenshots to match the portfolio.
 
 ### Experience
 
