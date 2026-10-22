@@ -74,7 +74,9 @@ Lite remains script-free after prerendering. Project descriptions may expand on 
 
 At 700px and below, use the full reading column for content. Scope summaries become three numbered rows, with the name and detail beside each number. Lite experience numbers sit beside the date; employer descriptions span the full width below. Lite project descriptions stay visible at phone widths regardless of pointer type.
 
-Use 17–18px reading text and labels of at least 13px. Project introductions use 18px body copy and responsive 36–48px titles. Gallery controls form two columns with 48px touch targets, and screenshots remain uncropped. The demo uses fewer nested gutters, larger controls and a stacked result. Keep navigation visible, and place the theme control beside the wordmark. These changes are scoped to phone widths so desktop composition is preserved.
+Use 17–18px reading text and labels of at least 13px. Project introductions use 18px body copy and responsive 36–48px titles. Gallery controls form two columns with 48px touch targets, and screenshots remain uncropped. The demo uses fewer nested gutters, larger controls and a stacked result. Use a compact wordmark without the subtitle on phones, followed by the theme control and a native disclosure menu. The menu exposes all four navigation links with comfortable touch targets and also works on script-free lite. On scripted pages it closes after selection, outside click or Escape. These changes are scoped to phone widths so desktop composition is preserved.
+
+Phone footers use an aligned two-column link grid below the copyright; the homepage role label occupies its own row. Remove the decorative “Next conversation” label from the shared contact section; location and email already provide the useful context.
 
 ## Components
 

@@ -1,4 +1,4 @@
-import {trace, flip} from '../src/play/model.js';
+import {trace, flip} from './model.js';
 export const MAX_SOLVER_MIRRORS = 8;
 // Rotations are toggles and commute, so the fewest rotations is the fewest mirrors that differ from the start.
 export function layouts(level) {
@@ -17,3 +17,17 @@ export function solve(level) {
   return {rotations: best.rotations, mirrors: best.mirrors, solutions: solutions.length};
 }
 export const hasLoop = level => layouts(level).some(({mirrors}) => trace(level, mirrors).outcome === 'loop');
+// Counts distinct beam routes, not layouts: a mirror the beam never touches can face either way without changing the route.
+export function routes(level) {
+  const seen = new Set();
+  for (const {mirrors} of layouts(level)) {
+    const shot = trace(level, mirrors);
+    if (shot.outcome === 'hit') seen.add(shot.path.map(({x, y}) => `${x},${y}`).join(' '));
+  }
+  return seen.size;
+}
+export function reachable(level) {
+  const touched = new Set();
+  for (const {mirrors} of layouts(level)) for (const {x, y} of trace(level, mirrors).path) touched.add(`${x},${y}`);
+  return Object.keys(level.mirrors).every(key => touched.has(key));
+}

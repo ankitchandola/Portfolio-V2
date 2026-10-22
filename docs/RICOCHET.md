@@ -11,7 +11,7 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 | `src/play/Ricochet.jsx` | The page: draws the board, wires the buttons to the reducer, saves progress |
 | `src/play/play.css` | Board and control styles, using the `--rc-*` colour tokens |
 | `src/content/levels.json` | The five levels |
-| `tests/solve.mjs` | A brute-force solver, used only by tests |
+| `src/play/solve.js` | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability |
 | `tests/play.test.mjs` | Tests for the rules, reducer, progress storage and every shipped level |
 
 `model.js` is the only file that knows the rules. The page and the tests both go through it.
@@ -175,10 +175,12 @@ Nothing saves "whenever state changes", so the empty first render can never over
 
 ## The solver and level checks
 
-`tests/solve.mjs` tries every mirror layout. With `n` mirrors that is `2ⁿ` layouts, and `MAX_SOLVER_MIRRORS` (8) caps this at 256 traces.
+`src/play/solve.js` tries every mirror layout. With `n` mirrors that is `2ⁿ` layouts, and `MAX_SOLVER_MIRRORS` (8) caps this at 256 traces.
 
 - `solve(level)` returns the fewest rotations needed, one solving layout, and how many layouts solve the level.
 - `hasLoop(level)` reports whether any layout loops.
+- `routes(level)` counts distinct beam routes that hit the target. It counts routes, not layouts, because a mirror the beam never touches can face either way without changing the route.
+- `reachable(level)` is true when the beam touches every mirror in at least one layout.
 
 Rotations are toggles and their order does not matter, so the fewest rotations equals the fewest mirrors that differ between the starting layout and any solving layout.
 
@@ -190,6 +192,8 @@ Rotations are toggles and their order does not matter, so the fewest rotations e
 - it has a title and a hint;
 - it is **not** already solved;
 - its minimum rotation count matches `expectedMinRotations`.
+- exactly one beam route reaches the target;
+- the beam can touch every mirror.
 
 Level 3 must also be able to loop. The current minimums are 1, 2, 2, 3 and 4.
 

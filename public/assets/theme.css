@@ -81,6 +81,8 @@ html[data-theme="dark"]{color-scheme:dark;--paper:#101e20;--white:#182a2d;--surf
 [data-theme="dark"] :is(.scope-numbers,.scope-stats)>div:nth-child(1) strong{color:#9ad9c7}
 [data-theme="dark"] :is(.scope-numbers,.scope-stats)>div:nth-child(2) strong{color:#efb98e}
 [data-theme="dark"] :is(.scope-numbers,.scope-stats)>div:nth-child(3) strong{color:#ced69e}
+.mobile-header-tools{display:none}
+
 /* A continuous edge-to-edge contact and footer band, with aligned content. */
 .contact.shell{width:100%;max-width:none;margin-inline:0;border-radius:0;padding-inline:max(50px,calc((100vw - 1320px)/2));background:#245e58;color:#fffdf7}
 footer.wrap,.footer.shell{width:100%;max-width:none;margin-inline:0;padding-inline:max(48px,calc((100vw - 1320px)/2));background:#245e58;color:#fffdf7;border-top:1px solid #63877d}
@@ -201,14 +203,22 @@ html:not([data-gallery="original"]) .gallery-invite{padding:0 0 12px;font:700 16
 /* Phone layouts: use the reading width for content, with comfortable touch targets. */
 @media(max-width:700px){
  .wrap,.shell{width:calc(100% - 40px)}
- .site-header,.header{padding-block:20px;gap:16px}
- :is(.site-header,.header) nav{gap:8px;align-items:center;flex-wrap:nowrap}
- :is(.site-header,.header) nav>a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;font-size:14px}
- :is(.site-header,.header) .theme-toggle{position:absolute;top:22px;right:0}
- :is(.site-header,.header) .brand,:is(.site-header,.header) .wordmark{padding-right:52px}
- .site-header .brand-icon,.wordmark .monogram{width:40px;flex-shrink:0;font-size:36px}
- :is(.site-header,.header) nav :is(.nav-contact,.header-contact){min-height:44px;padding:8px 12px;box-shadow:2px 2px 0 #9bb8a7}
- :is(.nav-contact,.header-contact) svg{display:none}
+ .site-header,.header{padding-block:16px;gap:12px;min-height:76px;flex-wrap:nowrap}
+ :is(.site-header,.header) .desktop-navigation{display:none}
+ :is(.site-header,.header) .brand,:is(.site-header,.header) .wordmark{padding:0;gap:10px;font-size:16px}
+ :is(.site-header,.header) .brand-sub{display:none}
+ .site-header .brand-icon,.wordmark .monogram{display:block;width:36px;flex-shrink:0;font-size:36px}
+ .mobile-header-tools{display:flex;align-items:center;gap:8px}
+ :is(.site-header,.header) .theme-toggle{position:static;width:44px;height:44px}
+ .mobile-navigation summary{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:50%;cursor:pointer;list-style:none}
+ .mobile-navigation summary::-webkit-details-marker{display:none}
+ .mobile-navigation summary:focus-visible{outline:3px solid var(--teal,var(--accent));outline-offset:4px}
+ .mobile-navigation .menu-close,.mobile-navigation[open] .menu-open{display:none}
+ .mobile-navigation[open] .menu-close{display:block}
+ :is(.site-header,.header) .mobile-navigation nav{position:absolute;z-index:30;top:calc(100% - 1px);left:0;right:0;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px;background:var(--paper);border:1px solid var(--line);border-radius:0 0 8px 8px;box-shadow:0 12px 24px #172f3114}
+ :is(.site-header,.header) .mobile-navigation nav>a{display:flex;justify-content:flex-start;align-items:center;min-height:48px;padding:12px;font-size:15px}
+ :is(.site-header,.header) .mobile-navigation nav :is(.nav-contact,.header-contact){gap:8px;box-shadow:none;min-height:48px;padding:12px;font-size:15px}
+ .mobile-navigation .nav-contact svg,.mobile-navigation .header-contact svg{display:block;width:20px;height:20px}
  .hero{padding-block:32px;gap:28px}.hero h1{margin:18px 0 12px;min-height:28px}
  .hero-title{font-size:clamp(42px,12vw,58px);line-height:1.08}
  .hero-description{font-size:17px;line-height:1.6;margin-top:20px}
@@ -270,15 +280,18 @@ html:not([data-gallery="original"]) .gallery-invite{padding:0 0 12px;font:700 16
  .contact-title,.contact-main{gap:20px;align-items:center}.contact h2,.contact-main h2{font-size:32px;line-height:1.2}
  .contact-label>span+span{font-size:14px}.contact-email,.contact-bottom .email{font-size:16px;min-height:44px}
  .contact-arrow,.contact-orb{width:48px;height:48px;flex-shrink:0}.contact-arrow svg,.contact-orb .icon{width:28px;height:28px}
- footer.wrap,.footer.shell{display:grid;grid-template-columns:1fr auto;gap:12px 20px;padding:24px 20px;font-size:13px}
- footer.wrap>span:nth-of-type(2){font:700 13px/1.5 var(--label)}
- .footer.shell>div{grid-column:1/-1;grid-row:2;flex-wrap:wrap;gap:12px 24px}
+ footer.wrap,.footer.shell{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;padding:28px 20px;font-size:14px}
+ footer.wrap>span:first-child,.footer.shell>span{grid-column:1/-1;margin-bottom:12px}
+ footer.wrap>span:nth-of-type(2){grid-column:1/-1;grid-row:2;font:700 13px/1.5 var(--label);margin-bottom:8px}
+ .footer.shell>div{display:contents}
+ footer.wrap>a,.footer.shell a{justify-self:start;gap:10px}
+ .footer.shell a svg{width:20px;height:20px}
  footer.wrap>a,.footer.shell a,.contact-bottom>div a{min-height:44px;display:inline-flex;align-items:center}
 }
 @media(max-width:360px){
  .wrap,.shell{width:calc(100% - 32px)}
- :is(.site-header,.header) nav>a{font-size:13px}
- :is(.site-header,.header) nav :is(.nav-contact,.header-contact){padding-inline:10px}
+ :is(.site-header,.header) .brand,:is(.site-header,.header) .wordmark{font-size:14px;gap:8px}
+ .mobile-header-tools{gap:4px}
  .hero-actions .button{width:100%;justify-content:space-between}.hero-actions .text-link{font-size:15px}
  .hero-foot{align-items:start}.hero-art .sheet{width:185px}
  .contact h2,.contact-main h2{font-size:28px}

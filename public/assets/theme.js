@@ -8,10 +8,16 @@
  };
  apply(document.documentElement.dataset.theme || 'light');
  document.addEventListener('click', event => {
+  const menu = document.querySelector('.mobile-navigation');
+  if (menu?.open && (!menu.contains(event.target) || event.target.closest('a'))) menu.open = false;
   if (!event.target.closest('.theme-toggle')) return;
   const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   apply(theme);
   try { localStorage.setItem('ankit-theme',theme); } catch {}
+ });
+ document.addEventListener('keydown', event => {
+  const menu = document.querySelector('.mobile-navigation[open]');
+  if (event.key === 'Escape' && menu) { menu.open = false; menu.querySelector('summary').focus(); }
  });
  media.addEventListener('change', event => {
   try { if (localStorage.getItem('ankit-theme')) return; } catch {}

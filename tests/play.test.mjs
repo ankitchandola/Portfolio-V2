@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {parseLevel, reflect, rotate, trace, createReducer, initialState, canUndo, canReset, allSolved, nextUnsolved, MAX_WIDTH} from '../src/play/model.js';
 import {loadSolved, saveSolved, STORAGE_KEY} from '../src/play/progress.js';
-import {solve, hasLoop, MAX_SOLVER_MIRRORS} from './solve.mjs';
+import {solve, hasLoop, routes, reachable, MAX_SOLVER_MIRRORS} from '../src/play/solve.js';
 import raw from '../src/content/levels.json' with {type: 'json'};
 const grid = (...rows) => parseLevel({id: 'test', rows});
 const levels = raw.map(parseLevel);
@@ -127,10 +127,21 @@ test('every shipped level is valid, unsolved at start and solvable at its intend
   assert.ok(level.title && level.hint, level.id);
   assert.notEqual(trace(level, level.mirrors).outcome, 'hit', `${level.id} starts solved`);
   assert.equal(solve(level)?.rotations, expectedMinRotations[level.id], level.id);
+  assert.equal(routes(level), 1, `${level.id} has one solution route`);
+  assert.ok(reachable(level), `${level.id} has no unreachable mirrors`);
  }
 });
 test('the loop level can actually loop', () => {
  const level = levels.find(l => l.id === 'round-and-round');
  assert.ok(hasLoop(level));
  assert.equal(trace(level, level.mirrors).outcome, 'loop');
+});
+test('routes counts distinct beam paths, not mirror layouts', () => {
+ assert.equal(routes(grid('./T', '>/.', '.\\/')), 2);
+ assert.equal(routes(grid('>.T', '../')), 1, 'an untouched mirror does not add a route');
+ assert.equal(routes(grid('>#T')), 0);
+});
+test('reachable flags mirrors the beam can never touch', () => {
+ assert.ok(!reachable(grid('>.T', '../')));
+ assert.ok(reachable(grid('>/.', '...', 'T..')));
 });
