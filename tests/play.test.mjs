@@ -13,7 +13,14 @@ import {
   nextUnsolved,
   MAX_WIDTH,
 } from '../src/play/model.js';
-import { loadSolved, saveSolved, STORAGE_KEY } from '../src/play/progress.js';
+import {
+  loadSolved,
+  saveSolved,
+  STORAGE_KEY,
+  loadPrefs,
+  savePrefs,
+  PREFS_KEY,
+} from '../src/play/progress.js';
 import {
   solve,
   hasLoop,
@@ -258,4 +265,107 @@ test('routes counts distinct beam paths, not mirror layouts', () => {
 test('reachable flags mirrors the beam can never touch', () => {
   assert.ok(!reachable(grid('>.T', '../')));
   assert.ok(reachable(grid('>/.', '...', 'T..')));
+});
+
+test('reducer: load opens a generated level with a clean slate', () => {
+  const reducer = createReducer(levels);
+  const generated = grid('>./.', '....', '..T.');
+  let state = reducer(initialState(levels), { type: 'fire' });
+  state = reducer(state, {
+    type: 'rotate',
+    key: Object.keys(levels[0].mirrors)[0],
+  });
+  state = reducer(state, {
+    type: 'load',
+    level: generated,
+    mode: 'random',
+    preset: 'easy',
+    seed: 'ABC123',
+  });
+  assert.equal(state.mode, 'random');
+  assert.equal(state.level, generated);
+  assert.equal(state.levelIndex, 0, 'campaign position is kept');
+  assert.deepEqual([state.preset, state.seed], ['easy', 'ABC123']);
+  assert.deepEqual(state.mirrors, generated.mirrors);
+  assert.deepEqual(state.history, []);
+  assert.equal(state.shot, null);
+});
+test('reducer: generated hits never count toward campaign progress', () => {
+  const reducer = createReducer(levels);
+  const generated = grid('>.\\.', '....', '..T.');
+  let state = reducer(initialState(levels), {
+    type: 'load',
+    level: generated,
+    mode: 'daily',
+  });
+  state = reducer(state, { type: 'fire' });
+  assert.equal(state.shot.outcome, 'hit');
+  assert.deepEqual(state.solved, []);
+  assert.equal(
+    reducer(state, { type: 'next' }),
+    state,
+    'next is the page’s job outside the campaign',
+  );
+});
+test('reducer: reset in a generated mode restores that level, not level 1', () => {
+  const reducer = createReducer(levels);
+  const generated = grid('>./.', '....', '..T.');
+  let state = reducer(initialState(levels), {
+    type: 'load',
+    level: generated,
+    mode: 'random',
+  });
+  state = reducer(state, { type: 'rotate', key: '2,0' });
+  state = reducer(state, { type: 'reset' });
+  assert.equal(state.mode, 'random');
+  assert.deepEqual(state.mirrors, generated.mirrors);
+  assert.ok(!canReset(state));
+  state = reducer(state, { type: 'select', index: 2 });
+  assert.equal(state.mode, 'campaign');
+  assert.equal(state.level, levels[2]);
+});
+
+test('preferences round-trip and merge partial saves', () => {
+  const storage = memory();
+  assert.deepEqual(loadPrefs(storage), {});
+  assert.ok(savePrefs(storage, { mode: 'random', preset: 'hard' }));
+  assert.ok(savePrefs(storage, { dailySolved: '2026-10-22' }));
+  assert.deepEqual(loadPrefs(storage), {
+    mode: 'random',
+    preset: 'hard',
+    dailySolved: '2026-10-22',
+  });
+  assert.equal(JSON.parse(storage.data[PREFS_KEY]).v, 1);
+});
+test('preferences drop each invalid field and keep the valid ones', () => {
+  const stored = (value) =>
+    loadPrefs(memory({ [PREFS_KEY]: JSON.stringify(value) }));
+  assert.deepEqual(stored({ v: 2, mode: 'random' }), {}, 'unknown version');
+  assert.deepEqual(stored({ v: 1, mode: 'shared', preset: 'easy' }), {
+    preset: 'easy',
+  });
+  assert.deepEqual(stored({ v: 1, mode: 'daily', preset: 'extreme' }), {
+    mode: 'daily',
+  });
+  assert.deepEqual(
+    stored({ v: 1, dailySolved: 'yesterday', preset: 'medium' }),
+    { preset: 'medium' },
+  );
+  for (const value of ['not json', 'null', '[]'])
+    assert.deepEqual(loadPrefs(memory({ [PREFS_KEY]: value })), {}, value);
+});
+test('preferences survive blocked storage and leave campaign progress alone', () => {
+  const broken = {
+    getItem() {
+      throw new Error('denied');
+    },
+    setItem() {
+      throw new Error('denied');
+    },
+  };
+  assert.deepEqual(loadPrefs(broken), {});
+  assert.equal(savePrefs(broken, { mode: 'random' }), false);
+  const storage = memory({ [STORAGE_KEY]: '["first-bounce"]' });
+  savePrefs(storage, { mode: 'daily' });
+  assert.equal(storage.data[STORAGE_KEY], '["first-bounce"]');
 });

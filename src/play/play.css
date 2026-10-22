@@ -251,7 +251,7 @@
   gap: 8px;
   margin-top: 8px;
 }
-.ricochet-levels button {
+:is(.ricochet-levels, .ricochet-modes) button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -265,15 +265,15 @@
   color: var(--ink);
   font: 700 18px var(--label);
 }
-.ricochet-levels button svg {
+:is(.ricochet-levels, .ricochet-modes) button svg {
   color: var(--rc-beam);
 }
-.ricochet-levels button[aria-pressed='true'] {
+:is(.ricochet-levels, .ricochet-modes) button[aria-pressed='true'] {
   background: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
 }
-.ricochet-levels button[aria-pressed='true'] svg {
+:is(.ricochet-levels, .ricochet-modes) button[aria-pressed='true'] svg {
   color: inherit;
 }
 
@@ -308,13 +308,14 @@
     background: var(--rc-hover);
   }
   .ricochet-button:not(:disabled):hover,
-  .ricochet-levels button:not([aria-pressed='true']):hover {
+  :is(.ricochet-levels, .ricochet-modes)
+    button:not([aria-pressed='true']):hover {
     background: var(--rc-hover);
   }
 }
 :is(
   .ricochet-button,
-  .ricochet-levels button,
+  :is(.ricochet-levels, .ricochet-modes) button,
   .ricochet-controls .solid-button
 ) {
   transition:
@@ -323,7 +324,7 @@
 }
 :is(
   .ricochet-button:not(:disabled),
-  .ricochet-levels button,
+  :is(.ricochet-levels, .ricochet-modes) button,
   .ricochet-controls .solid-button
 ):active {
   transform: scale(0.97);
@@ -352,16 +353,61 @@
   .ricochet-mirror,
   :is(
     .ricochet-button,
-    .ricochet-levels button,
+    :is(.ricochet-levels, .ricochet-modes) button,
     .ricochet-controls .solid-button
   ) {
     transition: none;
   }
   :is(
     .ricochet-button,
-    .ricochet-levels button,
+    :is(.ricochet-levels, .ricochet-modes) button,
     .ricochet-controls .solid-button
   ):active {
     transform: none;
   }
+}
+
+.ricochet-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.ricochet-modes button {
+  padding: 0 18px;
+  font-size: 17px;
+}
+.ricochet-levels .ricochet-new {
+  gap: 8px;
+  padding: 0 16px;
+}
+.ricochet-solved-today {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font: 700 17px/1.4 var(--body);
+  color: var(--rc-beam);
+}
+.ricochet-notice {
+  margin: 24px 0 0;
+  font: 700 17px/1.5 var(--body);
+}
+.ricochet-notice + .ricochet-result {
+  margin-top: 12px;
+}
+.ricochet-share {
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+  font: 700 16px/1.4 var(--body);
+}
+.ricochet-share input {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--rc-grid);
+  border-radius: 3px;
+  background: var(--rc-surface);
+  color: var(--ink);
+  font: 400 16px var(--body);
 }

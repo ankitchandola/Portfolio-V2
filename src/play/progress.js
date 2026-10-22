@@ -25,3 +25,35 @@ export function saveSolved(storage, ids) {
     return false;
   }
 }
+
+export const PREFS_KEY = 'ricochet-prefs';
+const SAVED_MODES = ['campaign', 'random', 'daily'];
+const PRESET_NAMES = ['easy', 'medium', 'hard'];
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+function readPrefs(storage) {
+  try {
+    const value = JSON.parse(storage.getItem(PREFS_KEY));
+    if (value?.v !== 1) return {};
+    const prefs = {};
+    if (SAVED_MODES.includes(value.mode)) prefs.mode = value.mode;
+    if (PRESET_NAMES.includes(value.preset)) prefs.preset = value.preset;
+    if (typeof value.dailySolved === 'string' && DATE.test(value.dailySolved))
+      prefs.dailySolved = value.dailySolved;
+    return prefs;
+  } catch {
+    return {};
+  }
+}
+// Saved data is untrusted: each field is kept only if valid, and nothing here is needed to play.
+export const loadPrefs = (storage) => readPrefs(storage);
+export function savePrefs(storage, patch) {
+  try {
+    storage.setItem(
+      PREFS_KEY,
+      JSON.stringify({ ...readPrefs(storage), ...patch, v: 1 }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}

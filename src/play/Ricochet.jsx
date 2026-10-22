@@ -9,6 +9,8 @@ import {
   LogOut,
   ArrowRight,
   ArrowUpRight,
+  Link2,
+  Shuffle,
 } from 'lucide-react';
 import raw from '../content/levels.json';
 import {
@@ -21,7 +23,15 @@ import {
   trace,
   DIRS,
 } from './model';
-import { loadSolved, saveSolved } from './progress';
+import { loadSolved, saveSolved, loadPrefs, savePrefs } from './progress';
+import {
+  PRESETS,
+  generatePuzzle,
+  dailySeed,
+  encodeLevel,
+  decodeLevel,
+} from './generate';
+import { randomSeed } from './random';
 import './play.css';
 const levels = raw.map(parseLevel);
 const reducer = createReducer(levels);
@@ -32,6 +42,69 @@ const browserStorage = () => {
     return null;
   }
 };
+const PRESET_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+const MODES = [
+  ['campaign', 'Levels'],
+  ['random', 'Random'],
+  ['daily', 'Today'],
+];
+const SEED = /^[0-9A-Z]{1,12}$/;
+const displayDate = (iso) =>
+  new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+    .toUpperCase();
+
+function randomPuzzle(preset, seed = randomSeed()) {
+  const level = generatePuzzle(seed, PRESETS[preset]);
+  return level && { type: 'load', mode: 'random', level, preset, seed };
+}
+function dailyPuzzle(now = new Date()) {
+  const level = generatePuzzle(dailySeed(now), PRESETS.medium);
+  const date = now.toISOString().slice(0, 10);
+  return (
+    level && {
+      type: 'load',
+      mode: 'daily',
+      level,
+      preset: 'medium',
+      seed: date,
+    }
+  );
+}
+const shareQuery = (level, preset) =>
+  `?l=${encodeLevel(level)}${preset ? `&d=${preset}` : ''}`;
+function queryFor({ mode, level, preset, seed }) {
+  if (mode === 'random') return `?seed=${seed}&d=${preset}`;
+  if (mode === 'daily') return '?mode=today';
+  if (mode === 'shared') return shareQuery(level, preset);
+  return '';
+}
+// replaceState keeps reload and back sensible without adding routes for every puzzle.
+function replaceQuery(query) {
+  window.history.replaceState(null, '', window.location.pathname + query);
+}
+// URL parameters win over saved preferences: opening a link means wanting that puzzle.
+function startingAction(search, prefs) {
+  const params = new URLSearchParams(search);
+  const preset = PRESETS[params.get('d')] ? params.get('d') : null;
+  if (params.has('l')) {
+    const level = decodeLevel(params.get('l'));
+    return level
+      ? { type: 'load', mode: 'shared', level, preset }
+      : { invalidLink: true };
+  }
+  const seed = params.get('seed')?.toUpperCase();
+  if (seed && SEED.test(seed)) return randomPuzzle(preset ?? 'medium', seed);
+  if (params.get('mode') === 'today') return dailyPuzzle();
+  if (prefs.mode === 'random') return randomPuzzle(prefs.preset ?? 'medium');
+  if (prefs.mode === 'daily') return dailyPuzzle();
+  return null;
+}
 const pointing = { N: 'up', E: 'right', S: 'down', W: 'left' };
 const place = (x, y) => `row ${y + 1}, column ${x + 1}`;
 
@@ -174,7 +247,7 @@ function Board({ level, mirrors, shot, shotCount, onRotate }) {
   );
 }
 
-function Result({ shot, solvedAll, onNext }) {
+function Result({ shot, mode, solvedAll, onNext, onNew }) {
   if (!shot)
     return <p className="ricochet-result">Turn the mirrors, then fire.</p>;
   const { x, y } = shot.end;
@@ -184,59 +257,187 @@ function Result({ shot, solvedAll, onNext }) {
     escaped: [LogOut, 'The beam left the grid.'],
     loop: [Repeat, 'Loop: the beam would bounce forever.'],
   }[shot.outcome];
+  let after = null;
+  if (shot.outcome === 'hit' && mode !== 'campaign')
+    after = (
+      <button type="button" className="solid-button" onClick={onNew}>
+        New puzzle
+        <Shuffle size={22} />
+      </button>
+    );
+  else if (shot.outcome === 'hit')
+    after = solvedAll ? (
+      <p className="ricochet-done">
+        All five levels solved.{' '}
+        <a href="/#work">
+          Back to the work
+          <ArrowUpRight size={20} />
+        </a>
+      </p>
+    ) : (
+      <button type="button" className="solid-button" onClick={onNext}>
+        Next level
+        <ArrowRight size={22} />
+      </button>
+    );
   return (
     <div className={'ricochet-result is-' + shot.outcome}>
       <p>
         <Icon size={24} aria-hidden="true" />
         <span>{text}</span>
       </p>
-      {shot.outcome === 'hit' &&
-        (solvedAll ? (
-          <p className="ricochet-done">
-            All five levels solved.{' '}
-            <a href="/#work">
-              Back to the work
-              <ArrowUpRight size={20} />
-            </a>
-          </p>
-        ) : (
-          <button type="button" className="solid-button" onClick={onNext}>
-            Next level
-            <ArrowRight size={22} />
-          </button>
-        ))}
+      {after}
     </div>
+  );
+}
+
+function Heading({ state, solvedToday, headingRef }) {
+  const { mode, level, preset, seed } = state;
+  const kicker = {
+    campaign: `LEVEL ${state.levelIndex + 1} OF ${levels.length}`,
+    random: `RANDOM · ${PRESET_LABELS[preset]?.toUpperCase()} · SEED ${seed}`,
+    daily: `PUZZLE OF THE DAY · ${seed && displayDate(seed)}`,
+    shared: `SHARED PUZZLE${preset ? ` · ${PRESET_LABELS[preset].toUpperCase()}` : ''}`,
+  }[mode];
+  return (
+    <div className="ricochet-level-heading">
+      <span className="kicker">{kicker}</span>
+      <h2 ref={headingRef} tabIndex={-1}>
+        {mode === 'campaign'
+          ? level.title
+          : mode === 'shared'
+            ? 'Shared puzzle'
+            : 'Generated puzzle'}
+      </h2>
+      <p>{level.hint}</p>
+      {mode === 'daily' && solvedToday && (
+        <p className="ricochet-solved-today">
+          <Check size={20} aria-hidden="true" />
+          Solved today
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ShareFallback({ url }) {
+  const input = useRef(null);
+  useEffect(() => input.current?.select(), [url]);
+  return (
+    <label className="ricochet-share">
+      Copy this link
+      <input
+        ref={input}
+        readOnly
+        value={url}
+        onFocus={(e) => e.target.select()}
+      />
+    </label>
   );
 }
 
 export default function Ricochet() {
   const [state, dispatch] = useReducer(reducer, levels, initialState);
   const [shotCount, setShotCount] = useState(0);
+  const [ui, setUi] = useReducer(
+    (current, patch) => ({
+      ...current,
+      ...(typeof patch === 'function' ? patch(current) : patch),
+    }),
+    { prefs: {}, notice: '', shareUrl: '' },
+  );
+  const { prefs, notice, shareUrl } = ui;
   const heading = useRef(null),
-    shownLevel = useRef(state.levelIndex);
-  const level = levels[state.levelIndex];
+    focusHeading = useRef(false);
+  const { level, mode } = state;
+
   useEffect(() => {
+    const storage = browserStorage();
     const ids = loadSolved(
-      browserStorage(),
+      storage,
       levels.map((l) => l.id),
     );
     if (ids.length) dispatch({ type: 'loaded', ids });
+    const saved = loadPrefs(storage);
+    const action = startingAction(window.location.search, saved);
+    setUi({
+      prefs: saved,
+      notice: action?.invalidLink ? "That puzzle link isn't valid." : '',
+    });
+    if (action?.type) {
+      dispatch(action);
+      replaceQuery(queryFor(action));
+    } else if (window.location.search) replaceQuery('');
   }, []);
   useEffect(() => {
-    if (shownLevel.current !== state.levelIndex) {
-      shownLevel.current = state.levelIndex;
-      heading.current?.focus();
-    }
-  }, [state.levelIndex]);
-  const fire = () => {
-    dispatch({ type: 'fire' });
-    setShotCount((n) => n + 1);
-    if (
-      !state.solved.includes(level.id) &&
-      trace(level, state.mirrors).outcome === 'hit'
-    )
-      saveSolved(browserStorage(), [level.id]);
+    if (!focusHeading.current) return;
+    focusHeading.current = false;
+    heading.current?.focus();
+  }, [level]);
+
+  const remember = (patch) => {
+    savePrefs(browserStorage(), patch);
+    setUi((current) => ({ prefs: { ...current.prefs, ...patch } }));
   };
+  const open = (action) => {
+    if (!action) {
+      setUi({
+        notice: "Couldn't build a puzzle just now. Try again.",
+        shareUrl: '',
+      });
+      return;
+    }
+    setUi({ notice: '', shareUrl: '' });
+    focusHeading.current = true;
+    dispatch(action);
+    replaceQuery(queryFor(action));
+  };
+  const act = (action) => {
+    setUi({ notice: '', shareUrl: '' });
+    dispatch(action);
+  };
+  const chooseMode = (next) => {
+    if (next === 'campaign')
+      open({ type: 'select', index: state.levelIndex, mode: 'campaign' });
+    if (next === 'random') open(randomPuzzle(prefs.preset ?? 'medium'));
+    if (next === 'daily') open(dailyPuzzle());
+    remember({ mode: next });
+  };
+  const chooseDifficulty = (preset) => {
+    open(randomPuzzle(preset));
+    remember({ mode: 'random', preset });
+  };
+  const newPuzzle = () => {
+    open(
+      randomPuzzle(
+        mode === 'daily'
+          ? 'medium'
+          : (state.preset ?? prefs.preset ?? 'medium'),
+      ),
+    );
+    remember({ mode: 'random' });
+  };
+  const fire = () => {
+    act({ type: 'fire' });
+    setShotCount((n) => n + 1);
+    if (trace(level, state.mirrors).outcome !== 'hit') return;
+    if (mode === 'campaign' && !state.solved.includes(level.id))
+      saveSolved(browserStorage(), [level.id]);
+    if (mode === 'daily') remember({ dailySolved: state.seed });
+  };
+  const copyLink = async () => {
+    const url =
+      window.location.origin +
+      window.location.pathname +
+      shareQuery(level, state.preset);
+    try {
+      await navigator.clipboard.writeText(url);
+      setUi({ notice: 'Link copied.', shareUrl: '' });
+    } catch {
+      setUi({ notice: '', shareUrl: url });
+    }
+  };
+
   return (
     <section className="case-page shell ricochet">
       <div className="case-page-heading">
@@ -251,22 +452,30 @@ export default function Ricochet() {
       </noscript>
       <div className="ricochet-layout">
         <div className="ricochet-stage">
-          <div className="ricochet-level-heading">
-            <span className="kicker">
-              LEVEL {state.levelIndex + 1} OF {levels.length}
-            </span>
-            <h2 ref={heading} tabIndex={-1}>
-              {level.title}
-            </h2>
-            <p>{level.hint}</p>
+          <div className="ricochet-modes" role="group" aria-label="Puzzle type">
+            {MODES.map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={mode === value}
+                onClick={() => chooseMode(value)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
+          <Heading
+            state={state}
+            solvedToday={mode === 'daily' && prefs.dailySolved === state.seed}
+            headingRef={heading}
+          />
           <p className="sr-only">{describe(level)}</p>
           <Board
             level={level}
             mirrors={state.mirrors}
             shot={state.shot}
             shotCount={shotCount}
-            onRotate={(key) => dispatch({ type: 'rotate', key })}
+            onRotate={(key) => act({ type: 'rotate', key })}
           />
         </div>
         <div className="ricochet-panel">
@@ -278,7 +487,7 @@ export default function Ricochet() {
             <button
               type="button"
               className="ricochet-button"
-              onClick={() => dispatch({ type: 'undo' })}
+              onClick={() => act({ type: 'undo' })}
               disabled={!canUndo(state)}
             >
               <Undo2 size={22} />
@@ -287,42 +496,87 @@ export default function Ricochet() {
             <button
               type="button"
               className="ricochet-button"
-              onClick={() => dispatch({ type: 'reset' })}
+              onClick={() => act({ type: 'reset' })}
               disabled={!canReset(state)}
             >
               <RotateCcw size={22} />
               Reset
             </button>
+            {mode !== 'campaign' && (
+              <button
+                type="button"
+                className="ricochet-button"
+                onClick={copyLink}
+              >
+                <Link2 size={22} />
+                Copy link
+              </button>
+            )}
           </div>
+          {shareUrl && <ShareFallback url={shareUrl} />}
           <div role="status" aria-live="polite" aria-atomic="true">
+            {notice && <p className="ricochet-notice">{notice}</p>}
             <Result
               shot={state.shot}
+              mode={mode}
               solvedAll={allSolved(levels, state.solved)}
-              onNext={() => dispatch({ type: 'next' })}
+              onNext={() => open({ type: 'next' })}
+              onNew={newPuzzle}
             />
           </div>
-          <div className="ricochet-levels">
-            <span className="kicker" aria-hidden="true">
-              LEVELS
-            </span>
-            <div role="group" aria-label="Choose a level">
-              {levels.map((l, i) => {
-                const solved = state.solved.includes(l.id);
-                return (
-                  <button
-                    key={l.id}
-                    type="button"
-                    aria-pressed={i === state.levelIndex}
-                    aria-label={`Level ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
-                    onClick={() => dispatch({ type: 'select', index: i })}
-                  >
-                    {i + 1}
-                    {solved && <Check size={16} aria-hidden="true" />}
-                  </button>
-                );
-              })}
+          {mode === 'campaign' && (
+            <div className="ricochet-levels">
+              <span className="kicker" aria-hidden="true">
+                LEVELS
+              </span>
+              <div role="group" aria-label="Choose a level">
+                {levels.map((l, i) => {
+                  const solved = state.solved.includes(l.id);
+                  return (
+                    <button
+                      key={l.id}
+                      type="button"
+                      aria-pressed={i === state.levelIndex}
+                      aria-label={`Level ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
+                      onClick={() =>
+                        open({ type: 'select', index: i, mode: 'campaign' })
+                      }
+                    >
+                      {i + 1}
+                      {solved && <Check size={16} aria-hidden="true" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
+          {mode === 'random' && (
+            <div className="ricochet-levels">
+              <span className="kicker" aria-hidden="true">
+                DIFFICULTY
+              </span>
+              <div role="group" aria-label="Choose a difficulty">
+                {Object.entries(PRESET_LABELS).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={state.preset === value}
+                    onClick={() => chooseDifficulty(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="ricochet-new"
+                  onClick={newPuzzle}
+                >
+                  <Shuffle size={18} aria-hidden="true" />
+                  New puzzle
+                </button>
+              </div>
+            </div>
+          )}
           <div className="ricochet-guide">
             <h2>How to play</h2>
             <ol>
@@ -333,7 +587,11 @@ export default function Ricochet() {
                 some layouts send it round in circles.
               </li>
               <li>
-                Undo takes back your last turn. Reset starts the level again.
+                Undo takes back your last turn. Reset starts the puzzle again.
+              </li>
+              <li>
+                Random builds a fresh puzzle at the difficulty you choose. Today
+                is the same puzzle for everyone, changing at midnight UTC.
               </li>
             </ol>
           </div>

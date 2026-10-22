@@ -90,7 +90,11 @@ export function trace(level, mirrors) {
 }
 
 export const initialState = (levels, levelIndex = 0, solved = []) => ({
+  mode: 'campaign',
+  level: levels[levelIndex],
   levelIndex,
+  preset: null,
+  seed: null,
   mirrors: levels[levelIndex].mirrors,
   history: [],
   shot: null,
@@ -111,7 +115,8 @@ export function nextUnsolved(levels, solved, from) {
 
 export function createReducer(levels) {
   return function reducer(state, action) {
-    const level = levels[state.levelIndex];
+    const { level } = state;
+    const campaign = state.mode === 'campaign';
     switch (action.type) {
       case 'rotate': {
         if (!(action.key in state.mirrors)) return state;
@@ -125,7 +130,7 @@ export function createReducer(levels) {
       case 'fire': {
         const shot = trace(level, state.mirrors);
         const solved =
-          shot.outcome === 'hit' && !state.solved.includes(level.id)
+          campaign && shot.outcome === 'hit' && !state.solved.includes(level.id)
             ? [...state.solved, level.id]
             : state.solved;
         return { ...state, shot, solved };
@@ -140,17 +145,33 @@ export function createReducer(levels) {
             }
           : state;
       case 'reset':
-        return initialState(levels, state.levelIndex, state.solved);
+        return campaign
+          ? initialState(levels, state.levelIndex, state.solved)
+          : { ...state, mirrors: level.mirrors, history: [], shot: null };
       case 'select':
         return levels[action.index]
           ? initialState(levels, action.index, state.solved)
           : state;
       case 'next': {
+        if (!campaign) return state;
         const index = nextUnsolved(levels, state.solved, state.levelIndex);
         return index === null
           ? state
           : initialState(levels, index, state.solved);
       }
+      // Generated and shared puzzles; the page builds the level so the reducer stays pure.
+      // levelIndex is kept so returning to the campaign reopens the same level.
+      case 'load':
+        return {
+          ...state,
+          mode: action.mode,
+          level: action.level,
+          preset: action.preset ?? null,
+          seed: action.seed ?? null,
+          mirrors: action.level.mirrors,
+          history: [],
+          shot: null,
+        };
       case 'loaded':
         return {
           ...state,
