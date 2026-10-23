@@ -1,4 +1,4 @@
-import { parseLevel, trace, flip, DIRS, MAX_WIDTH } from './model.js';
+import { parseLevel, trace, flip, DIRS, MAX_WIDTH } from './model.ts';
 import { layouts, MAX_SOLVER_MIRRORS } from './solve.js';
 import { mulberry32, hashSeed } from './random.js';
 

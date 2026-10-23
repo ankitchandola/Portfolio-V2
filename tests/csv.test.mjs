@@ -7,7 +7,7 @@ import {
   parseAmount,
   compare,
   money,
-} from '../src/csv-model.js';
+} from '../src/csv-model.ts';
 test('changed amount is detected and the source is untouched', () => {
   const out = evaluate(initialState());
   assert.deepEqual(out.changed, ['002']);

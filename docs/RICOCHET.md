@@ -6,18 +6,18 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 
 | File                      | Responsibility                                                                                                 |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `src/play/model.js`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
+| `src/play/model.ts`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
 | `src/play/solve.js`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
 | `src/play/generate.js`    | The seeded level generator, its presets, the daily seed and share-link encoding                                |
 | `src/play/random.js`      | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
-| `src/play/progress.js`    | `localStorage`: solved campaign levels and saved preferences                                                   |
+| `src/play/progress.ts`    | `localStorage`: solved campaign levels and saved preferences                                                   |
 | `src/play/Ricochet.jsx`   | The page: modes, the board, URL handling, Copy link and saving                                                 |
 | `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
 | `src/content/levels.json` | The five campaign levels                                                                                       |
 | `tests/play.test.mjs`     | Tests for the rules, reducer, storage and every shipped level                                                  |
 | `tests/generate.test.mjs` | Property, snapshot and share-link tests for the generator                                                      |
 
-`model.js` is the only file that knows the rules. The solver, the generator, the page and the tests all go through it.
+`model.ts` is the only file that knows the rules. The solver, the generator, the page and the tests all go through it.
 
 ## The grid
 

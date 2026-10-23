@@ -23,8 +23,8 @@ import {
   allSolved,
   trace,
   DIRS,
-} from './model';
-import { loadSolved, saveSolved, loadPrefs, savePrefs } from './progress';
+} from './model.ts';
+import { loadSolved, saveSolved, loadPrefs, savePrefs } from './progress.ts';
 import {
   PRESETS,
   generatePuzzle,

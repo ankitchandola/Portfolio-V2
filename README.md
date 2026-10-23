@@ -55,9 +55,10 @@ Run `npm run format` to format maintained source and documentation, or
 `npm run format:check` to verify formatting without changing files. Generated
 output, dependencies, local tool artifacts and third-party assets are excluded.
 
-Run `npm run check` for formatting verification, zero-warning lint, model tests,
-the production build and generated-site checks, in that order. Individual commands
-are `npm run format:check`, `npm run lint`, `npm test`, `npm run build` and
+Run `npm run check` for formatting verification, zero-warning lint, strict type
+checks, model tests, the production build and generated-site checks, in that
+order. Individual commands are `npm run format:check`, `npm run lint`,
+`npm run typecheck`, `npm test`, `npm run build` and
 `npm run check:site` (the last requires an existing `dist/` build).
 
 ESLint covers application JS/JSX, Node scripts/tests, Vite and ESLint
@@ -71,3 +72,29 @@ The checks cover the comparison model, the puzzle model and levels,
 prerendered links and assets, headings, duplicate IDs, script-free lite output
 and principal palette contrast. They do not replace a rendered visual review
 in a browser.
+
+## TypeScript migration boundary
+
+The comparison model (`src/csv-model.ts`), puzzle rules/reducer
+(`src/play/model.ts`) and progress/preferences storage (`src/play/progress.ts`)
+are migrated. Tests import these `.ts` files directly using Node 24's native
+type stripping; there is no emitted JavaScript copy or replacement test runner.
+`tests/model-types.ts` contains compile-only checks for invalid action, state,
+shot, evaluation and preference combinations.
+
+`tsconfig.json` shares strict, no-emit and unchecked-index settings.
+`tsconfig.app.json` checks application TypeScript with browser libraries and no
+Node globals. `tsconfig.node.json` checks the ESLint JavaScript configuration and
+compile-only model contracts with Node globals and no DOM libraries.
+Type-aware ESLint rules, including unhandled promises and exhaustive switches,
+apply to migrated source and typed tests.
+
+This is an incremental boundary, not a claim that all JavaScript is type-checked.
+Remaining React components/content modules, browser interactions, puzzle
+generator/solver/random modules and Vite tooling stay JavaScript for the next
+migration batches; they remain linted. Native `.mjs` tests stay on `node:test`.
+The prerender entry, public theme script and inline pre-paint theme bootstrap
+also stay JavaScript: prerendering imports the generated SSR bundle, public
+scripts bypass Vite's TypeScript transformation, and early theme application
+must not wait for the application bundle. Broader checked-JavaScript coverage
+for these intentional exceptions belongs to the tooling batch.

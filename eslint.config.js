@@ -3,6 +3,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
@@ -45,8 +46,26 @@ export default [
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
   },
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.ts'],
+  })),
   {
-    files: ['src/**/*.jsx'],
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: { 'react-hooks': reactHooks },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    },
+  },
+  {
+    files: ['src/**/*.{jsx,tsx}'],
     languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
     plugins: {
       react,

@@ -1,4 +1,4 @@
-import { trace, flip } from './model.js';
+import { trace, flip } from './model.ts';
 export const MAX_SOLVER_MIRRORS = 8;
 // Rotations are toggles and commute, so the fewest rotations is the fewest mirrors that differ from the start.
 export function layouts(level) {

@@ -10,8 +10,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
     "check:site": "python3 tests/check-site.py",
-    "check": "npm run format:check && npm run lint && npm test && npm run build && npm run check:site",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run check:site",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .build && node scripts/prerender.mjs",
     "dev": "vite --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs"
@@ -24,12 +25,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "prettier": "^3.8.3",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.0",
     "vite": "^7.0.0"
   }
 }

@@ -1,4 +1,4 @@
-import { initialState, evaluate, money } from '../csv-model.js';
+import { initialState, evaluate, money } from '../csv-model.ts';
 const $ = (id) => document.getElementById(id);
 let state = initialState();
 const amount = $('amount'),

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLevel, trace } from '../src/play/model.js';
+import { parseLevel, trace } from '../src/play/model.ts';
 import { MAX_SOLVER_MIRRORS } from '../src/play/solve.js';
 import { mulberry32, hashSeed, randomSeed } from '../src/play/random.js';
 import {

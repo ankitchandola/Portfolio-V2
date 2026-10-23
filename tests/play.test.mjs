@@ -12,7 +12,7 @@ import {
   allSolved,
   nextUnsolved,
   MAX_WIDTH,
-} from '../src/play/model.js';
+} from '../src/play/model.ts';
 import {
   loadSolved,
   saveSolved,
@@ -20,7 +20,7 @@ import {
   loadPrefs,
   savePrefs,
   PREFS_KEY,
-} from '../src/play/progress.js';
+} from '../src/play/progress.ts';
 import {
   solve,
   hasLoop,
@@ -128,6 +128,36 @@ test('parseLevel rejects malformed levels', () => {
   for (const [reason, rows] of Object.entries(bad))
     assert.throws(() => parseLevel({ id: reason, rows }), Error, reason);
   assert.throws(() => parseLevel({ id: 'empty', rows: [] }));
+});
+test('parseLevel rejects non-string and missing rows with a level-specific error', () => {
+  const missingRow = ['>.T'];
+  missingRow.length = 2;
+  for (const rows of [[null], [123], [undefined]])
+    assert.throws(
+      () => parseLevel({ id: 'bad-row', rows }),
+      /Level bad-row: row 0 must be a string/,
+    );
+  for (const rows of [['>.T', null], missingRow])
+    assert.throws(
+      () => parseLevel({ id: 'bad-row', rows }),
+      /Level bad-row: row 1 must be 3 characters/,
+    );
+});
+test('initialState rejects absent campaign levels and trace rejects missing cells', () => {
+  for (const [available, index] of [
+    [[], 0],
+    [levels, -1],
+    [levels, levels.length],
+  ])
+    assert.throws(() => initialState(available, index), {
+      name: 'RangeError',
+      message: `Unknown level index ${index}`,
+    });
+  const level = grid('>.T');
+  assert.throws(
+    () => trace({ ...level, rows: [] }, level.mirrors),
+    /Level test: missing cell at row 0, column 1/,
+  );
 });
 
 test('reducer: rotate records history and clears the shot, undo restores', () => {
