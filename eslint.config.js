@@ -31,16 +31,10 @@ export default [
   },
   {
     files: ['src/**/*.{js,jsx}', 'public/assets/theme.js'],
-    ignores: ['src/entry-server.jsx'],
     languageOptions: { globals: globals.browser },
   },
   {
-    files: [
-      'scripts/**/*.mjs',
-      'tests/**/*.mjs',
-      '*.js',
-      'src/entry-server.jsx',
-    ],
+    files: ['scripts/**/*.mjs', 'tests/**/*.mjs', '*.js'],
     languageOptions: { globals: globals.node },
   },
   {

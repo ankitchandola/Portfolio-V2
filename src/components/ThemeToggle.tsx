@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode, SVGProps } from 'react';
 const lucide = {
   'aria-hidden': 'true',
   focusable: 'false',
@@ -11,8 +11,14 @@ const lucide = {
   strokeWidth: '2',
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
-};
-export function LucideSvg({ name, children }) {
+} satisfies SVGProps<SVGSVGElement>;
+export function LucideSvg({
+  name,
+  children,
+}: {
+  name: string;
+  children: ReactNode;
+}) {
   return (
     <svg {...lucide} className={'lucide lucide-' + name}>
       {children}

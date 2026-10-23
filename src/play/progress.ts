@@ -1,4 +1,5 @@
 import type { PresetName, SavedMode } from './model.ts';
+import { isPresetName } from './model.ts';
 
 export interface StorageLike {
   getItem(key: string): string | null;
@@ -72,12 +73,7 @@ function readPrefs(storage: OptionalStorage): Preferences {
         value.mode === 'daily')
     )
       prefs.mode = value.mode;
-    if (
-      'preset' in value &&
-      (value.preset === 'easy' ||
-        value.preset === 'medium' ||
-        value.preset === 'hard')
-    )
+    if ('preset' in value && isPresetName(value.preset))
       prefs.preset = value.preset;
     if (
       'dailySolved' in value &&

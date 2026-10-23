@@ -23,7 +23,7 @@ const devPages = {
     async handler(html, { server }) {
       if (html.includes('<!--home-html-->')) {
         const { renderHome } = await server.ssrLoadModule(
-          '/src/entry-server.jsx',
+          '/src/entry-server.tsx',
         );
         html = html.replace('<!--home-html-->', renderHome());
       }

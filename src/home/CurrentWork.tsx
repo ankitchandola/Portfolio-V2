@@ -1,4 +1,3 @@
-import React from 'react';
 import { scope } from '../content/profile';
 export default function CurrentWork() {
   return (

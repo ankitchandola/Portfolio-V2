@@ -1,4 +1,3 @@
-import React from 'react';
 import SiteHeader from './SiteHeader';
 import Hero from './Hero';
 import StackRibbon from './StackRibbon';

@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseLevel, trace } from '../src/play/model.ts';
-import { MAX_SOLVER_MIRRORS } from '../src/play/solve.js';
-import { mulberry32, hashSeed, randomSeed } from '../src/play/random.js';
+import { MAX_SOLVER_MIRRORS } from '../src/play/solve.ts';
+import { mulberry32, hashSeed, randomSeed } from '../src/play/random.ts';
 import {
   PRESETS,
   analyse,
@@ -13,7 +13,7 @@ import {
   encodeLevel,
   decodeLevel,
   hintFor,
-} from '../src/play/generate.js';
+} from '../src/play/generate.ts';
 import raw from '../src/content/levels.json' with { type: 'json' };
 
 const SEEDS_PER_PRESET = { easy: 200, medium: 200, hard: 30 };

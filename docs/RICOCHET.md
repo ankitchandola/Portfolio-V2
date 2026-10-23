@@ -7,11 +7,11 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 | File                      | Responsibility                                                                                                 |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `src/play/model.ts`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
-| `src/play/solve.js`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
-| `src/play/generate.js`    | The seeded level generator, its presets, the daily seed and share-link encoding                                |
-| `src/play/random.js`      | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
+| `src/play/solve.ts`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
+| `src/play/generate.ts`    | The seeded level generator, its presets, the daily seed and share-link encoding                                |
+| `src/play/random.ts`      | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
 | `src/play/progress.ts`    | `localStorage`: solved campaign levels and saved preferences                                                   |
-| `src/play/Ricochet.jsx`   | The page: modes, the board, URL handling, Copy link and saving                                                 |
+| `src/play/Ricochet.tsx`   | The page: modes, the board, URL handling, Copy link and saving                                                 |
 | `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
 | `src/content/levels.json` | The five campaign levels                                                                                       |
 | `tests/play.test.mjs`     | Tests for the rules, reducer, storage and every shipped level                                                  |
@@ -125,7 +125,7 @@ Level 3, "Round and round", relies on this. Its starting layout sends the beam r
 
 ## Drawing the beam
 
-`beamPoints(level, shot)` in `Ricochet.jsx` turns a trace into the corner points of an SVG path. Points sit at cell centres, except that the line starts at the tip of the source arrow (`SOURCE_TIP`). The end of the line depends on the outcome:
+`beamPoints(level, shot)` in `Ricochet.tsx` turns a trace into the corner points of an SVG path. Points sit at cell centres, except that the line starts at the tip of the source arrow (`SOURCE_TIP`). The end of the line depends on the outcome:
 
 - **hit:** the target's outer ring (`TARGET_RADIUS`), so the line never covers the target;
 - **blocked:** the edge of the wall cell. The wall's centre is moved half a cell back towards the beam.
@@ -193,7 +193,7 @@ Nothing saves "whenever state changes", so the empty first render can never over
 
 ## The solver and level checks
 
-`src/play/solve.js` tries every mirror layout. With `n` mirrors that is `2ⁿ` layouts, and `MAX_SOLVER_MIRRORS` (8) caps this at 256 traces.
+`src/play/solve.ts` tries every mirror layout. With `n` mirrors that is `2ⁿ` layouts, and `MAX_SOLVER_MIRRORS` (8) caps this at 256 traces.
 
 - `solve(level)` returns the fewest rotations needed, one solving layout, and how many layouts solve the level.
 - `hasLoop(level)` reports whether any layout loops.
@@ -217,7 +217,7 @@ Level 3 must also be able to loop. The current minimums are 1, 2, 2, 3 and 4.
 
 ## Generated levels
 
-`generatePuzzle(seed, constraints)` in `src/play/generate.js` builds a fresh level that is guaranteed to be valid. It builds the answer first, then hides it:
+`generatePuzzle(seed, constraints)` in `src/play/generate.ts` builds a fresh level that is guaranteed to be valid. It builds the answer first, then hides it:
 
 1. **Route.** It walks from a random source, choosing directions that have room. Each straight run goes from 1 cell up to all the free room ahead. Each corner gets a mirror in its solved orientation, and the walk ends on the target after `turns` corners.
 2. **Decoys** go 1–3 cells along the exit a _wrong_ turn would take, so they catch mistakes.

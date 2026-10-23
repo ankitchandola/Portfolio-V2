@@ -1,4 +1,3 @@
-import React from 'react';
 import { profile } from '../content/profile';
 import { Icon } from './icons';
 export default function Contact() {

@@ -1,7 +1,8 @@
-import React from 'react';
-import projects from '../content/projects.json';
+import projects from '../content/projects';
 import { LinkArrow } from './icons';
-const decisions = projects.filter((p) => p.decision);
+const decisions = projects.flatMap((p) =>
+  p.decision ? [{ ...p, decision: p.decision }] : [],
+);
 export default function Decisions() {
   return (
     <section className="decisions-section wrap" id="decisions">

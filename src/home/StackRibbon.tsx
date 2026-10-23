@@ -1,4 +1,5 @@
 import React from 'react';
+import type { HTMLAttributes } from 'react';
 import { Icon } from './icons';
 const stack = [
   'React',
@@ -13,7 +14,7 @@ const stack = [
   'Reusable UI',
   'Accessible interfaces',
 ];
-function Group(props) {
+function Group(props: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className="marquee-group" {...props}>
       {stack.map((item) => (

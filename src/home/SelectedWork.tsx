@@ -1,10 +1,16 @@
-import React from 'react';
-import projects from '../content/projects.json';
+import projects from '../content/projects';
+import type { Project, ProjectHome } from '../content/types.ts';
 import EvidenceGallery from './EvidenceGallery';
 import ReconDemo from './ReconDemo';
 import { Icon, LinkArrow } from './icons';
-function Flagship({ project: p }) {
-  const home = p.home;
+function Flagship({
+  project: p,
+  home,
+}: {
+  project: Project;
+  home: ProjectHome;
+}) {
+  const fact = p.facts?.[0];
   return (
     <article className="flagship" id={home.anchor}>
       <div className="feature-heading">
@@ -16,9 +22,9 @@ function Flagship({ project: p }) {
             ))}
           </div>
           <p>{home.tagline}</p>
-          {p.facts && (
+          {fact && (
             <p className="feature-fact">
-              <strong>{p.facts[0][0]}</strong> {p.facts[0][1]}
+              <strong>{fact[0]}</strong> {fact[1]}
             </p>
           )}
         </div>
@@ -63,7 +69,13 @@ function Flagship({ project: p }) {
     </article>
   );
 }
-function IntegratedProject({ project: p, index }) {
+function IntegratedProject({
+  project: p,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) {
   return (
     <article
       className={'integrated-project' + (index % 2 ? '' : ' flip')}
@@ -110,7 +122,7 @@ export default function SelectedWork() {
       </div>
       {projects.map((p, i) =>
         p.home ? (
-          <Flagship key={p.slug} project={p} />
+          <Flagship key={p.slug} project={p} home={p.home} />
         ) : (
           <IntegratedProject key={p.slug} project={p} index={i} />
         ),

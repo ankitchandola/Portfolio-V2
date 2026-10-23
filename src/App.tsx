@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route } from 'react-router';
 import {
   ArrowUpRight,
@@ -12,7 +12,11 @@ import {
 import { profile, scope, year } from './content/profile';
 import { experience } from './content/experience';
 import HeaderNavigation from './components/HeaderNavigation';
-import projects from './content/projects.json';
+import projects from './content/projects';
+import type {
+  Project as ProjectContent,
+  ProjectDiagram,
+} from './content/types.ts';
 import Ricochet from './play/Ricochet';
 function Header() {
   return (
@@ -179,7 +183,7 @@ function Today() {
     </section>
   );
 }
-function Gallery({ project }) {
+function Gallery({ project }: { project: ProjectContent }) {
   const [active, setActive] = useState(0);
   if (!project.images.length) return null;
   return (
@@ -231,7 +235,7 @@ function Gallery({ project }) {
     </div>
   );
 }
-function Diagram({ diagram: d }) {
+function Diagram({ diagram: d }: { diagram: ProjectDiagram }) {
   return (
     <figure className="case-diagram">
       <figcaption>{d.title}</figcaption>
@@ -267,9 +271,10 @@ function Diagram({ diagram: d }) {
     </figure>
   );
 }
-function ProjectNav({ index }) {
+function ProjectNav({ index }: { index: number }) {
   const prev = projects[(index + projects.length - 1) % projects.length],
     next = projects[(index + 1) % projects.length];
+  if (!prev || !next) throw new RangeError(`Unknown project index ${index}`);
   return (
     <nav className="project-nav" aria-label="More projects">
       <a href={'/work/' + prev.slug}>
@@ -289,9 +294,10 @@ function ProjectNav({ index }) {
     </nav>
   );
 }
-function Project({ slug }) {
+function Project({ slug }: { slug: string }) {
   const index = projects.findIndex((p) => p.slug === slug),
     p = projects[index];
+  if (!p) throw new Error(`Unknown project slug ${slug}`);
   return (
     <section className="case-page shell">
       <a className="back-link" href="/#work">

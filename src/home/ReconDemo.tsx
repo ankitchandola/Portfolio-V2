@@ -1,12 +1,25 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { Icon } from './icons';
 // Initial state matches csv-model's initialState(); src/home/interactions.js updates these ids in place.
 const before = [
   ['001', 'Desk lamp', '1,250.00'],
   ['002', 'Notebook set', '850.00'],
   ['003', 'Planter', '640.00'],
-];
-function DataFile({ title, state, caption, id, children }) {
+] satisfies readonly [SampleRow, SampleRow, SampleRow];
+type SampleRow = readonly [sku: string, item: string, amount: string];
+function DataFile({
+  title,
+  state,
+  caption,
+  id,
+  children,
+}: {
+  title: string;
+  state: string;
+  caption: string;
+  id: string;
+  children: ReactNode;
+}) {
   return (
     <div className="data-file">
       <div className="file-title">
@@ -29,7 +42,7 @@ function DataFile({ title, state, caption, id, children }) {
     </div>
   );
 }
-function row([sku, item, amount]) {
+function row([sku, item, amount]: SampleRow) {
   return (
     <tr key={sku}>
       <td>{sku}</td>

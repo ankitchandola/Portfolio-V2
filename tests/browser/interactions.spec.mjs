@@ -208,6 +208,21 @@ test('generated links hydrate, clipboard fallback shares, and mode preferences p
   ).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('generated links ignore unsupported difficulty names', async ({
+  page,
+}) => {
+  for (const difficulty of ['unknown', 'constructor', 'toString']) {
+    await page.goto(`/play?seed=ABC123&d=${difficulty}`);
+    await expect(page.locator('.ricochet-level-heading')).toContainText(
+      'RANDOM · MEDIUM · SEED ABC123',
+    );
+    await expect(page).toHaveURL(/seed=ABC123&d=medium$/);
+    await expect(
+      page.getByRole('button', { name: 'Medium', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+  }
+});
+
 test('header navigation and phone menu close on Escape, outside click and selection', async ({
   page,
 }, testInfo) => {

@@ -1,4 +1,3 @@
-import React from 'react';
 export default function HowIWork() {
   return (
     <section className="about-section" id="about">

@@ -63,7 +63,7 @@ regressions, in that order. Individual commands are `npm run format:check`,
 `npm run check:site` and `npm run test:browser` (the last two require an existing
 `dist/` build).
 
-ESLint covers application JS/JSX, Node scripts/tests, Vite and ESLint
+ESLint covers application JS/JSX/TS/TSX, Node scripts/tests, Vite and ESLint
 configuration, and the public theme script, with separate browser and Node
 globals. JSX uses the recommended React Hooks and accessibility rules. ESLint
 stays on version 9 while the React/JSX accessibility plugins declare support
@@ -116,12 +116,22 @@ Real screen-reader, Safari/Firefox and physical-device checks remain manual.
 
 ## TypeScript migration boundary
 
-The comparison model (`src/csv-model.ts`), puzzle rules/reducer
-(`src/play/model.ts`) and progress/preferences storage (`src/play/progress.ts`)
+The comparison model (`src/csv-model.ts`), puzzle rules/reducer, generator,
+solver, random helpers and progress/preferences storage (`src/play/*.ts`)
 are migrated. Tests import these `.ts` files directly using Node 24's native
 type stripping; there is no emitted JavaScript copy or replacement test runner.
 `tests/model-types.ts` contains compile-only checks for invalid action, state,
 shot, evaluation and preference combinations.
+
+Shared content, all React components and both React entries are typed.
+`src/content/types.ts` defines the project, profile and experience contracts,
+including fixed-length image/challenge/scope tuples and mutually exclusive
+flow/ownership diagram variants. `src/content/projects.ts` adapts the JSON
+arrays to those tuples with checked lengths; `projects.json` remains the
+authoritative copy. `tests/content-types.ts` pins the content contracts.
+Full build-time content/link/asset validation remains a later delivery.
+The homepage still renders static markup without hydration, and lite remains
+script-free.
 
 `tsconfig.json` shares strict, no-emit and unchecked-index settings.
 `tsconfig.app.json` checks application TypeScript with browser libraries and no
@@ -134,8 +144,7 @@ Type-aware ESLint rules, including unhandled promises and exhaustive switches,
 apply to migrated source and typed tests.
 
 This is an incremental boundary, not a claim that all JavaScript is type-checked.
-Remaining React components/content modules, browser interactions, puzzle
-generator/solver/random modules and Vite tooling stay JavaScript for the next
+Browser interactions and Vite tooling stay JavaScript for the next
 migration batches; they remain linted. Native `.mjs` tests stay on `node:test`.
 The prerender entry, public theme script and inline pre-paint theme bootstrap
 also stay JavaScript: prerendering imports the generated SSR bundle, public

@@ -27,7 +27,7 @@ import {
   routes,
   reachable,
   MAX_SOLVER_MIRRORS,
-} from '../src/play/solve.js';
+} from '../src/play/solve.ts';
 import raw from '../src/content/levels.json' with { type: 'json' };
 const grid = (...rows) => parseLevel({ id: 'test', rows });
 const levels = raw.map(parseLevel);

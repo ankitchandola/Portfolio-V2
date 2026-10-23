@@ -135,7 +135,7 @@ A Learn / Random / Today switch sits above the board. It uses the same pressed-b
 
 ### Actions and icons
 
-Reuse existing teal primary actions, outlined secondary actions, restrained offset shadows and small corner radii. Keep the contact CTA in the same visual family. Use Lucide consistently; prefer icons around 24px and comfortable controls of at least 44px. Icon-only buttons need accessible labels. Draw icons from the Lucide set in `src/home/icons.jsx`; do not use unicode glyphs (▤ ✓ ✳ ↺ ⇅) as icons. Footer social links include recognisable GitHub and LinkedIn icons alongside names.
+Reuse existing teal primary actions, outlined secondary actions, restrained offset shadows and small corner radii. Keep the contact CTA in the same visual family. Use Lucide consistently; prefer icons around 24px and comfortable controls of at least 44px. Icon-only buttons need accessible labels. Draw icons from the Lucide set in `src/home/icons.tsx`; do not use unicode glyphs (▤ ✓ ✳ ↺ ⇅) as icons. Footer social links include recognisable GitHub and LinkedIn icons alongside names.
 
 ## Motion and interaction
 
@@ -158,10 +158,10 @@ Keep internal project names and private infrastructure identifiers anonymous. Us
 - `index.html`: homepage document head and a placeholder for the rendered sections.
 - `src/home/`: homepage section components. They are rendered to static markup and never hydrated.
 - `src/content/projects.json`: homepage project sections, engineering decisions, project details and lite summaries.
-- `src/content/profile.js`: contact links, résumé path and the current-scope list shared by the homepage and lite.
-- `src/App.jsx`: lite, project detail, `/play` and 404 layouts.
+- `src/content/profile.ts`: contact links, résumé path and the current-scope list shared by the homepage and lite.
+- `src/App.tsx`: lite, project detail, `/play` and 404 layouts.
 - `src/play/`: the Ricochet model, solver, level generator, storage, page component and its stylesheet. `src/content/levels.json` holds the campaign levels. [docs/RICOCHET.md](RICOCHET.md) explains the logic.
-- `src/home/PlayInvite.jsx`: the homepage invitation to `/play`, styled in `public/assets/v2.css`.
+- `src/home/PlayInvite.tsx`: the homepage invitation to `/play`, styled in `public/assets/v2.css`.
 - `src/home/client.js`, `src/home/interactions.js`: homepage galleries and interactions, attached to the static markup by element ids and data attributes.
 - `public/assets/style.css`, `v2.css`: main styles; some legacy rules remain.
 - `src/style.css`, `src/case-theme.css`: detail and lite styles.

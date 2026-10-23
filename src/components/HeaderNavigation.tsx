@@ -1,8 +1,7 @@
-import React from 'react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
-export default function HeaderNavigation({ home = false }) {
+export default function HeaderNavigation({ home = false }: { home?: boolean }) {
   const links = (
     <>
       <a href={home ? '#about' : '/#about'}>About me</a>

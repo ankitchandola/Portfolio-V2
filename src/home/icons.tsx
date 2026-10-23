@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 const shapes = {
   'arrow-up-right': (
     <>
@@ -94,8 +94,11 @@ const shapes = {
       <circle cx="4" cy="4" r="2" />
     </>
   ),
-};
-export function Icon({ name }) {
+} satisfies Record<string, ReactNode>;
+function isIconName(name: string): name is keyof typeof shapes {
+  return Object.hasOwn(shapes, name);
+}
+export function Icon({ name }: { name: string }) {
   return (
     <svg
       aria-hidden="true"
@@ -111,7 +114,7 @@ export function Icon({ name }) {
       width="24"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {shapes[name]}
+      {isIconName(name) && shapes[name]}
     </svg>
   );
 }

@@ -1,8 +1,19 @@
-import React from 'react';
 import { LucideSvg } from '../components/ThemeToggle';
 import { profile } from '../content/profile';
 import { Icon } from './icons';
-function Sheet({ side, file, note, number, changed }) {
+function Sheet({
+  side,
+  file,
+  note,
+  number,
+  changed,
+}: {
+  side: 'back' | 'front';
+  file: string;
+  note: string;
+  number: string;
+  changed?: boolean;
+}) {
   return (
     <div className={'sheet sheet-' + side}>
       <div className="sheet-header">

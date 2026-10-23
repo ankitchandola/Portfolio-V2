@@ -1,4 +1,4 @@
-export function mulberry32(seed) {
+export function mulberry32(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
     state = (state + 0x6d2b79f5) >>> 0;
@@ -10,7 +10,7 @@ export function mulberry32(seed) {
 }
 
 // FNV-1a over UTF-16 code units: stable across browsers and Node.
-export function hashSeed(text) {
+export function hashSeed(text: string): number {
   let hash = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
     hash ^= text.charCodeAt(i);
@@ -19,8 +19,14 @@ export function hashSeed(text) {
   return hash;
 }
 
-export function randomSeed(source = globalThis.crypto) {
+export function randomSeed(
+  source: {
+    getRandomValues(values: Uint32Array<ArrayBuffer>): Uint32Array<ArrayBuffer>;
+  } = globalThis.crypto,
+): string {
   const value = new Uint32Array(1);
   source.getRandomValues(value);
-  return value[0].toString(36).toUpperCase().padStart(6, '0').slice(-6);
+  const seed = value[0];
+  if (seed === undefined) throw new Error('Random seed buffer is empty');
+  return seed.toString(36).toUpperCase().padStart(6, '0').slice(-6);
 }

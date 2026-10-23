@@ -1,5 +1,7 @@
+import type { Experience } from './types.ts';
+
 // Each role carries the homepage card (`home`) and the shorter lite entry (`lite`); the two editions word them differently.
-export const experience = [
+export const experience: readonly Experience[] = [
   {
     dates: '2025 — PRESENT',
     company: 'Green Fortune Technologies',

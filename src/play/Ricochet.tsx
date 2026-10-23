@@ -1,4 +1,5 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
 import {
   Zap,
   Undo2,
@@ -12,6 +13,7 @@ import {
   Link2,
   CalendarDays,
   Shuffle,
+  type LucideIcon,
 } from 'lucide-react';
 import raw from '../content/levels.json';
 import {
@@ -23,16 +25,27 @@ import {
   allSolved,
   trace,
   DIRS,
+  isPresetName,
+} from './model.ts';
+import type {
+  GameAction,
+  GameState,
+  Level,
+  Position,
+  PresetName,
+  SavedMode,
+  Shot,
 } from './model.ts';
 import { loadSolved, saveSolved, loadPrefs, savePrefs } from './progress.ts';
+import type { Preferences } from './progress.ts';
 import {
   PRESETS,
   generatePuzzle,
   dailySeed,
   encodeLevel,
   decodeLevel,
-} from './generate';
-import { randomSeed } from './random';
+} from './generate.ts';
+import { randomSeed } from './random.ts';
 import './play.css';
 const levels = raw.map(parseLevel);
 const reducer = createReducer(levels);
@@ -46,14 +59,32 @@ const browserStorage = () => {
 // The beam starts at the source arrow's tip and stops at the target's outer ring, in cell units from the centre.
 const SOURCE_TIP = 0.2;
 const TARGET_RADIUS = 0.34;
-const PRESET_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
-const MODES = [
+const PRESET_LABELS: Record<PresetName, string> = {
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+};
+const MODES: readonly (readonly [SavedMode, string])[] = [
   ['campaign', 'Learn'],
   ['random', 'Random'],
   ['daily', 'Today'],
 ];
 const SEED = /^[0-9A-Z]{1,12}$/;
-const displayDate = (iso) =>
+type LoadAction = Extract<GameAction, { type: 'load' }>;
+type OpenAction = Extract<GameAction, { type: 'load' | 'select' | 'next' }>;
+type Point = readonly [x: number, y: number];
+interface BoardStyle extends CSSProperties {
+  '--cols'?: number;
+  '--rows'?: number;
+  '--draw'?: string;
+}
+interface UIState {
+  prefs: Preferences;
+  notice: string;
+  shareUrl: string;
+}
+type UIPatch = Partial<UIState> | ((current: UIState) => Partial<UIState>);
+const displayDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`)
     .toLocaleDateString('en-GB', {
       day: 'numeric',
@@ -63,11 +94,14 @@ const displayDate = (iso) =>
     })
     .toUpperCase();
 
-function randomPuzzle(preset, seed = randomSeed()) {
+function randomPuzzle(
+  preset: PresetName,
+  seed = randomSeed(),
+): LoadAction | null {
   const level = generatePuzzle(seed, PRESETS[preset]);
   return level && { type: 'load', mode: 'random', level, preset, seed };
 }
-function dailyPuzzle(now = new Date()) {
+function dailyPuzzle(now = new Date()): LoadAction | null {
   const level = generatePuzzle(dailySeed(now), PRESETS.medium);
   const date = now.toISOString().slice(0, 10);
   return (
@@ -80,22 +114,28 @@ function dailyPuzzle(now = new Date()) {
     }
   );
 }
-const shareQuery = (level, preset) =>
+const shareQuery = (level: Level, preset: PresetName | null | undefined) =>
   `?l=${encodeLevel(level)}${preset ? `&d=${preset}` : ''}`;
-function queryFor({ mode, level, preset, seed }) {
+function queryFor(action: OpenAction): string {
+  if (action.type !== 'load') return '';
+  const { mode, level, preset, seed } = action;
   if (mode === 'random') return `?seed=${seed}&d=${preset}`;
   if (mode === 'daily') return '?mode=today';
   if (mode === 'shared') return shareQuery(level, preset);
   return '';
 }
 // replaceState keeps reload and back sensible without adding routes for every puzzle.
-function replaceQuery(query) {
+function replaceQuery(query: string): void {
   window.history.replaceState(null, '', window.location.pathname + query);
 }
 // URL parameters win over saved preferences: opening a link means wanting that puzzle.
-function startingAction(search, prefs) {
+function startingAction(
+  search: string,
+  prefs: Preferences,
+): LoadAction | { invalidLink: true } | null {
   const params = new URLSearchParams(search);
-  const preset = PRESETS[params.get('d')] ? params.get('d') : null;
+  const difficulty = params.get('d');
+  const preset = isPresetName(difficulty) ? difficulty : null;
   if (params.has('l')) {
     const level = decodeLevel(params.get('l'));
     return level
@@ -110,12 +150,13 @@ function startingAction(search, prefs) {
   return null;
 }
 const pointing = { N: 'up', E: 'right', S: 'down', W: 'left' };
-const place = (x, y) => `row ${y + 1}, column ${x + 1}`;
+const place = (x: number, y: number) => `row ${y + 1}, column ${x + 1}`;
 
-function describe(level) {
+function describe(level: Level): string {
   const { w, h, rows } = level,
     cells = rows.flatMap((row, y) => [...row].map((c, x) => ({ c, x, y })));
-  const edge = ({ x, y }) => x === 0 || y === 0 || x === w - 1 || y === h - 1;
+  const edge = ({ x, y }: Position) =>
+    x === 0 || y === 0 || x === w - 1 || y === h - 1;
   const walled = cells.filter(edge).every(({ c }) => c === '#');
   const walls = cells
     .filter((cell) => cell.c === '#' && !(walled && edge(cell)))
@@ -123,16 +164,16 @@ function describe(level) {
   const mirrors = Object.keys(level.mirrors).length;
   return `${w} columns by ${h} rows${walled ? ', surrounded by a wall' : ''}. The beam starts at ${place(level.source.x, level.source.y)}, pointing ${pointing[level.source.dir]}. The target is at ${place(level.target.x, level.target.y)}. ${mirrors} ${mirrors === 1 ? 'mirror' : 'mirrors'}. ${walls.length ? `Walls at ${walls.join('; ')}.` : walled ? 'No other walls.' : 'No walls.'}`;
 }
-function beamPoints(level, shot) {
-  const centre = ({ x, y }) => [x + 0.5, y + 0.5];
+function beamPoints(level: Level, shot: Shot): Point[] {
+  const centre = ({ x, y }: Position): Point => [x + 0.5, y + 0.5];
   const [dx, dy] = DIRS[level.source.dir];
-  const tip = [
+  const tip: Point = [
     level.source.x + 0.5 + dx * SOURCE_TIP,
     level.source.y + 0.5 + dy * SOURCE_TIP,
   ];
   const points = [tip, ...shot.path.map(centre)];
   const { x, y, dir } = shot.end;
-  const backFromCentre = (distance) => [
+  const backFromCentre = (distance: number): Point => [
     x + 0.5 - DIRS[dir][0] * distance,
     y + 0.5 - DIRS[dir][1] * distance,
   ];
@@ -144,23 +185,40 @@ function beamPoints(level, shot) {
   if (shot.outcome === 'loop') points.push(centre(shot.end));
   return points;
 }
-const toPath = (points) =>
+const toPath = (points: readonly Point[]) =>
   points.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
 
-function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
+function Board({
+  level,
+  mirrors,
+  shot,
+  shotCount,
+  onRotate,
+  onFire,
+}: Pick<GameState, 'level' | 'mirrors' | 'shot'> & {
+  shotCount: number;
+  onRotate: (key: string) => void;
+  onFire: () => void;
+}) {
   const cells = level.rows.flatMap((row, y) =>
     [...row].map((c, x) => ({ c, x, y })),
   );
   const points = shot && beamPoints(level, shot);
-  const loop = shot?.outcome === 'loop' && points.slice(shot.loopStart + 1);
+  const loop =
+    shot?.outcome === 'loop' && points ? points.slice(shot.loopStart) : null;
+  const mirrorCells = Object.entries(mirrors).map(([key, m]) => {
+    const [x, y] = key.split(',').map(Number);
+    if (x === undefined || y === undefined)
+      throw new Error(`Invalid mirror key ${key}`);
+    return { key, m, x, y };
+  });
   const drawMs = points ? Math.min(600, points.length * 45) : 0;
+  const boardStyle: BoardStyle = { '--cols': level.w, '--rows': level.h };
+  const beamStyle: BoardStyle = { '--draw': drawMs + 'ms' };
   const { source, target } = level,
     [dx, dy] = DIRS[source.dir];
   return (
-    <div
-      className="ricochet-board"
-      style={{ '--cols': level.w, '--rows': level.h }}
-    >
+    <div className="ricochet-board" style={boardStyle}>
       <svg
         viewBox={`0 0 ${level.w} ${level.h}`}
         aria-hidden="true"
@@ -201,8 +259,7 @@ function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
             d={`M${source.x + 0.5 + dx * SOURCE_TIP} ${source.y + 0.5 + dy * SOURCE_TIP} L${source.x + 0.5 - dx * 0.1 + dy * 0.13} ${source.y + 0.5 - dy * 0.1 + dx * 0.13} L${source.x + 0.5 - dx * 0.1 - dy * 0.13} ${source.y + 0.5 - dy * 0.1 - dx * 0.13}Z`}
           />
         </g>
-        {Object.entries(mirrors).map(([key, m]) => {
-          const [x, y] = key.split(',').map(Number);
+        {mirrorCells.map(({ key, m, x, y }) => {
           return (
             <g key={key}>
               <circle
@@ -227,15 +284,15 @@ function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
             className="rc-beam"
             d={toPath(points)}
             pathLength="1"
-            style={{ '--draw': drawMs + 'ms' }}
+            style={beamStyle}
           />
         )}
         {loop && (
           <path
             key={'loop' + shotCount}
             className="rc-loop"
-            d={toPath([points[shot.loopStart], ...loop])}
-            style={{ '--draw': drawMs + 'ms' }}
+            d={toPath(loop)}
+            style={beamStyle}
           />
         )}
       </svg>
@@ -247,8 +304,7 @@ function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
           onClick={onFire}
           aria-label={`Fire the beam from ${place(source.x, source.y)}, pointing ${pointing[source.dir]}`}
         />
-        {Object.entries(mirrors).map(([key, m]) => {
-          const [x, y] = key.split(',').map(Number);
+        {mirrorCells.map(({ key, m, x, y }) => {
           return (
             <button
               key={key}
@@ -265,17 +321,32 @@ function Board({ level, mirrors, shot, shotCount, onRotate, onFire }) {
   );
 }
 
-function Result({ shot, mode, solvedAll, onNext, onNew, onRandom, onToday }) {
+function Result({
+  shot,
+  mode,
+  solvedAll,
+  onNext,
+  onNew,
+  onRandom,
+  onToday,
+}: Pick<GameState, 'shot' | 'mode'> & {
+  solvedAll: boolean;
+  onNext: () => void;
+  onNew: () => void;
+  onRandom: () => void;
+  onToday: () => void;
+}) {
   if (!shot)
     return <p className="ricochet-result">Turn the mirrors, then fire.</p>;
   const { x, y } = shot.end;
-  const [Icon, text] = {
+  const outcomes: Record<Shot['outcome'], readonly [LucideIcon, string]> = {
     hit: [Check, `Hit the target in ${shot.path.length} cells.`],
     blocked: [Ban, `Blocked by a wall at ${place(x, y)}.`],
     escaped: [LogOut, 'The beam left the grid.'],
     loop: [Repeat, 'Loop: the beam would bounce forever.'],
-  }[shot.outcome];
-  let after = null;
+  };
+  const [Icon, text] = outcomes[shot.outcome];
+  let after: ReactNode = null;
   if (shot.outcome === 'hit' && mode !== 'campaign')
     after = (
       <button type="button" className="solid-button" onClick={onNew}>
@@ -319,11 +390,19 @@ function Result({ shot, mode, solvedAll, onNext, onNew, onRandom, onToday }) {
   );
 }
 
-function Heading({ state, solvedToday, headingRef }) {
+function Heading({
+  state,
+  solvedToday,
+  headingRef,
+}: {
+  state: GameState;
+  solvedToday: boolean;
+  headingRef: RefObject<HTMLHeadingElement | null>;
+}) {
   const { mode, level, preset, seed } = state;
   const kicker = {
     campaign: `LESSON ${state.levelIndex + 1} OF ${levels.length}`,
-    random: `RANDOM · ${PRESET_LABELS[preset]?.toUpperCase()} · SEED ${seed}`,
+    random: `RANDOM · ${preset ? PRESET_LABELS[preset].toUpperCase() : undefined} · SEED ${seed}`,
     daily: `PUZZLE OF THE DAY · ${seed && displayDate(seed)}`,
     shared: `SHARED PUZZLE${preset ? ` · ${PRESET_LABELS[preset].toUpperCase()}` : ''}`,
   }[mode];
@@ -348,8 +427,8 @@ function Heading({ state, solvedToday, headingRef }) {
   );
 }
 
-function ShareFallback({ url }) {
-  const input = useRef(null);
+function ShareFallback({ url }: { url: string }) {
+  const input = useRef<HTMLInputElement>(null);
   useEffect(() => input.current?.select(), [url]);
   return (
     <label className="ricochet-share">
@@ -358,7 +437,7 @@ function ShareFallback({ url }) {
         ref={input}
         readOnly
         value={url}
-        onFocus={(e) => e.target.select()}
+        onFocus={(e) => e.currentTarget.select()}
       />
     </label>
   );
@@ -368,14 +447,14 @@ export default function Ricochet() {
   const [state, dispatch] = useReducer(reducer, levels, initialState);
   const [shotCount, setShotCount] = useState(0);
   const [ui, setUi] = useReducer(
-    (current, patch) => ({
+    (current: UIState, patch: UIPatch): UIState => ({
       ...current,
       ...(typeof patch === 'function' ? patch(current) : patch),
     }),
     { prefs: {}, notice: '', shareUrl: '' },
   );
   const { prefs, notice, shareUrl } = ui;
-  const heading = useRef(null),
+  const heading = useRef<HTMLHeadingElement>(null),
     focusHeading = useRef(false);
   const { level, mode } = state;
   const solvedCount = levels.filter((l) => state.solved.includes(l.id)).length;
@@ -391,9 +470,12 @@ export default function Ricochet() {
     const action = startingAction(window.location.search, saved);
     setUi({
       prefs: saved,
-      notice: action?.invalidLink ? "That puzzle link isn't valid." : '',
+      notice:
+        action && 'invalidLink' in action
+          ? "That puzzle link isn't valid."
+          : '',
     });
-    if (action?.type) {
+    if (action && 'type' in action) {
       dispatch(action);
       replaceQuery(queryFor(action));
     } else if (window.location.search) replaceQuery('');
@@ -404,11 +486,11 @@ export default function Ricochet() {
     heading.current?.focus();
   }, [level]);
 
-  const remember = (patch) => {
+  const remember = (patch: Preferences) => {
     savePrefs(browserStorage(), patch);
     setUi((current) => ({ prefs: { ...current.prefs, ...patch } }));
   };
-  const open = (action) => {
+  const open = (action: OpenAction | null) => {
     if (!action) {
       setUi({
         notice: "Couldn't build a puzzle just now. Try again.",
@@ -421,18 +503,17 @@ export default function Ricochet() {
     dispatch(action);
     replaceQuery(queryFor(action));
   };
-  const act = (action) => {
+  const act = (action: GameAction) => {
     setUi({ notice: '', shareUrl: '' });
     dispatch(action);
   };
-  const chooseMode = (next) => {
-    if (next === 'campaign')
-      open({ type: 'select', index: state.levelIndex, mode: 'campaign' });
+  const chooseMode = (next: SavedMode) => {
+    if (next === 'campaign') open({ type: 'select', index: state.levelIndex });
     if (next === 'random') open(randomPuzzle(prefs.preset ?? 'medium'));
     if (next === 'daily') open(dailyPuzzle());
     remember({ mode: next });
   };
-  const chooseDifficulty = (preset) => {
+  const chooseDifficulty = (preset: PresetName) => {
     open(randomPuzzle(preset));
     remember({ mode: 'random', preset });
   };
@@ -452,7 +533,7 @@ export default function Ricochet() {
     if (trace(level, state.mirrors).outcome !== 'hit') return;
     if (mode === 'campaign' && !state.solved.includes(level.id))
       saveSolved(browserStorage(), [level.id]);
-    if (mode === 'daily') remember({ dailySolved: state.seed });
+    if (mode === 'daily' && state.seed) remember({ dailySolved: state.seed });
   };
   const copyLink = async () => {
     const url =
@@ -536,7 +617,9 @@ export default function Ricochet() {
               <button
                 type="button"
                 className="ricochet-button"
-                onClick={copyLink}
+                onClick={() => {
+                  void copyLink();
+                }}
               >
                 <Link2 size={22} />
                 Copy link
@@ -571,9 +654,7 @@ export default function Ricochet() {
                       className={solved ? 'is-solved' : undefined}
                       aria-pressed={i === state.levelIndex}
                       aria-label={`Lesson ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
-                      onClick={() =>
-                        open({ type: 'select', index: i, mode: 'campaign' })
-                      }
+                      onClick={() => open({ type: 'select', index: i })}
                     >
                       {i + 1}
                       {solved && (
@@ -596,16 +677,18 @@ export default function Ricochet() {
                 DIFFICULTY
               </span>
               <div role="group" aria-label="Choose a difficulty">
-                {Object.entries(PRESET_LABELS).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    aria-pressed={state.preset === value}
-                    onClick={() => chooseDifficulty(value)}
-                  >
-                    {label}
-                  </button>
-                ))}
+                {Object.keys(PRESET_LABELS)
+                  .filter(isPresetName)
+                  .map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={state.preset === value}
+                      onClick={() => chooseDifficulty(value)}
+                    >
+                      {PRESET_LABELS[value]}
+                    </button>
+                  ))}
                 <button
                   type="button"
                   className="ricochet-new"

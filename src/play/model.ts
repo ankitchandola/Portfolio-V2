@@ -4,6 +4,9 @@ export type Mirrors = Readonly<Record<string, Mirror>>;
 export type PresetName = 'easy' | 'medium' | 'hard';
 export type GameMode = 'campaign' | 'random' | 'daily' | 'shared';
 export type SavedMode = Exclude<GameMode, 'shared'>;
+export function isPresetName(value: unknown): value is PresetName {
+  return value === 'easy' || value === 'medium' || value === 'hard';
+}
 export interface Position {
   x: number;
   y: number;

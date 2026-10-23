@@ -1,9 +1,8 @@
-import React from 'react';
 import { renderToString, renderToStaticMarkup } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import App from './App';
 import Home from './home/Home';
-export function render(url) {
+export function render(url: string) {
   return renderToString(
     <StaticRouter location={url}>
       <App />

@@ -1,11 +1,13 @@
-export const profile = {
+import type { Profile, Scope } from './types.ts';
+
+export const profile: Profile = {
   name: 'Ankit Chandola',
   email: 'chandolaankit027@gmail.com',
   github: 'https://github.com/ankitchandola',
   linkedin: 'https://www.linkedin.com/in/ankit-chandola-b53a54187/',
   resume: '/assets/docs/ankit-chandola-resume.pdf',
 };
-export const scope = [
+export const scope: readonly Scope[] = [
   ['01', 'CRM & operations', 'Frontend + backend'],
   ['02', 'Shared React package', 'Two applications'],
   ['03', 'Website & CMS', 'Staging infrastructure'],

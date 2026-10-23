@@ -1,9 +1,12 @@
-import React from 'react';
+import type { ProjectImage } from '../content/types.ts';
 import { Icon } from './icons';
 // Static markup: src/home/client.js switches panels without hydrating React.
 export default function EvidenceGallery({
   images,
   label = 'Screenshot views',
+}: {
+  images: readonly ProjectImage[];
+  label?: string;
 }) {
   return (
     <div className="evidence-gallery">
