@@ -11,6 +11,8 @@ export default [
       'node_modules/**',
       'dist/**',
       '.build/**',
+      'playwright-report/**',
+      'test-results/**',
       '.sites-runtime/**',
       '.claude/**',
       '.copilot/**',
@@ -40,6 +42,10 @@ export default [
       'src/entry-server.jsx',
     ],
     languageOptions: { globals: globals.node },
+  },
+  {
+    files: ['tests/browser/**/*.mjs'],
+    languageOptions: { globals: globals.browser },
   },
   {
     files: ['src/**/*.{js,jsx}'],

@@ -2,3 +2,5 @@ node_modules/
 .build/
 .sites-runtime/
 dist/
+playwright-report/
+test-results/

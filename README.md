@@ -42,10 +42,9 @@ uploads the Pages artifact. Deployments are serialized separately from
 validation and use the `github-pages` environment. The site URL used for
 canonical links and the sitemap is set in `scripts/prerender.mjs`.
 
-**Owner setup after this workflow lands:** require the **Validate** status check
-in the ruleset or branch protection for `main`, after its first successful run.
-Branch protection was not changed from this checkout: the active GitHub account
-has read-only access and the new check has not been published yet. Configure
+**Owner setup:** require the **Validate** status check in the ruleset or branch
+protection for `main`. These changes do not enable branch protection; the active
+GitHub account has read-only access to repository settings. Configure
 required reviewers on the `github-pages` environment if an additional human
 deployment approval is desired.
 
@@ -55,11 +54,14 @@ Run `npm run format` to format maintained source and documentation, or
 `npm run format:check` to verify formatting without changing files. Generated
 output, dependencies, local tool artifacts and third-party assets are excluded.
 
+After `npm ci`, install the pinned browser with `npx playwright install chromium`.
+CI uses `npx playwright install --with-deps chromium` for browser system libraries.
 Run `npm run check` for formatting verification, zero-warning lint, strict type
-checks, model tests, the production build and generated-site checks, in that
-order. Individual commands are `npm run format:check`, `npm run lint`,
-`npm run typecheck`, `npm test`, `npm run build` and
-`npm run check:site` (the last requires an existing `dist/` build).
+checks, model tests, the production build, generated-site checks and browser
+regressions, in that order. Individual commands are `npm run format:check`,
+`npm run lint`, `npm run typecheck`, `npm test`, `npm run build`,
+`npm run check:site` and `npm run test:browser` (the last two require an existing
+`dist/` build).
 
 ESLint covers application JS/JSX, Node scripts/tests, Vite and ESLint
 configuration, and the public theme script, with separate browser and Node
@@ -73,6 +75,45 @@ prerendered links and assets, headings, duplicate IDs, script-free lite output
 and principal palette contrast. They do not replace a rendered visual review
 in a browser.
 
+## Browser regression checks
+
+Playwright runs Chromium at 1440px desktop and 375px phone widths, against
+production `dist/` served on `127.0.0.1:4173`. It refuses to reuse another server.
+`scripts/serve-dist.mjs` serves generated files and directory indexes; missing
+routes and assets return the generated custom 404 with HTTP 404, never an SPA
+fallback.
+
+The suite covers both gallery variants, keyboard gallery selection, comparison
+scenarios/validation/reset, puzzle controls/progress and generated links,
+clipboard fallback, theme persistence, navigation, reduced motion and visible
+keyboard focus. Each test fails on uncaught page errors or React hydration
+errors. Separate JavaScript-disabled contexts check homepage reading and
+navigation, script-free lite output and its native phone menu.
+
+Axe checks WCAG 2/2.1 A/AA on the homepage, a project detail, lite and play in
+both themes, including expanded decisions/notes and phone menus. These checks
+do not establish complete accessibility conformance or replace screen-reader
+and touch-device testing.
+
+Four reviewed screenshots in `tests/browser/__screenshots__/` pin the solved
+first puzzle board in each theme and viewport. They deliberately exclude
+font-sensitive surrounding copy and dynamic dates. Playwright/Chromium is pinned;
+snapshots are never updated implicitly. For an intentional visual change, run
+`npm run build` followed by
+`npm run test:browser -- --grep "visual baseline" --update-snapshots`, inspect
+every changed image and include the reviewed goldens in the same change.
+Do not update goldens to hide an unexplained mismatch.
+
+Failure screenshots and traces go to ignored `test-results/`; CI also uploads
+the HTML report and traces as the `browser-failures` artifact for seven days.
+Open a trace with `npx playwright show-trace <trace.zip>`.
+
+Manual review still covers light/dark at 320, 375, 768, 1024 and 1440px:
+expanded accordions, experience stacking while scrolling, long project copy,
+uncropped gallery images, footer width, touch controls, lite descriptions and
+keyboard focus. The board-only visual baseline is not a whole-site approval.
+Real screen-reader, Safari/Firefox and physical-device checks remain manual.
+
 ## TypeScript migration boundary
 
 The comparison model (`src/csv-model.ts`), puzzle rules/reducer
@@ -84,8 +125,11 @@ shot, evaluation and preference combinations.
 
 `tsconfig.json` shares strict, no-emit and unchecked-index settings.
 `tsconfig.app.json` checks application TypeScript with browser libraries and no
-Node globals. `tsconfig.node.json` checks the ESLint JavaScript configuration and
-compile-only model contracts with Node globals and no DOM libraries.
+Node globals. `tsconfig.node.json` checks the ESLint and Playwright JavaScript
+configurations, production test server and compile-only model contracts with
+Node globals and no DOM libraries. Native browser specs remain `.mjs`; their
+Node test callbacks and browser-evaluated callbacks are linted with both
+environments available.
 Type-aware ESLint rules, including unhandled promises and exhaustive switches,
 apply to migrated source and typed tests.
 

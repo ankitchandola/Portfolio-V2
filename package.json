@@ -12,7 +12,8 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
     "check:site": "python3 tests/check-site.py",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run check:site",
+    "test:browser": "playwright test",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run check:site && npm run test:browser",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .build && node scripts/prerender.mjs",
     "dev": "vite --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs"
@@ -25,6 +26,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "1.64.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",

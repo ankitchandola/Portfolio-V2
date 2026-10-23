@@ -17,8 +17,8 @@ import Ricochet from './play/Ricochet';
 function Header() {
   return (
     <header className="header shell">
-      <a className="wordmark" href="/" aria-label="Ankit Chandola homepage">
-        <span className="monogram">
+      <a className="wordmark" href="/">
+        <span className="monogram" aria-hidden="true">
           a<span>c</span>
         </span>
         <span>

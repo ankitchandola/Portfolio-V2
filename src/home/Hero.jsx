@@ -101,11 +101,7 @@ export default function Hero() {
           </a>
         </div>
       </div>
-      <a
-        aria-label="Try the interactive CSV and Excel comparison demo"
-        className="hero-art"
-        href="#playground"
-      >
+      <a className="hero-art" href="#playground">
         <div className="orbit orbit-one"></div>
         <div className="orbit orbit-two"></div>
         <span className="art-tag">A LITTLE PREVIEW OF WHAT I BUILD</span>
